@@ -6,7 +6,8 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 
-enum class SceneState {
+enum class SceneState
+{
     Menu,
     MazeGame,
     SaveAsImage,
@@ -15,23 +16,22 @@ enum class SceneState {
     Load,
 };
 
-class Scene {
+class Scene
+{
 public:
     Scene() = default;
-    void Init(const std::shared_ptr<Window>& window,
-              const std::shared_ptr<Settings>& setting);
+    void Init(const std::shared_ptr<Window>& window, const std::shared_ptr<Settings>& setting);
     virtual ~Scene();
     virtual void Update();
     virtual void Event(sf::Event& event);
     virtual void Render();
 
 protected:
-    std::shared_ptr<Settings> GetSetting() const {
+    std::shared_ptr<Settings> GetSetting() const
+    {
         return settings;
     };
 
-
-    PopUp pp;
 
 private:
     std::shared_ptr<Settings> settings;

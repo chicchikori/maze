@@ -7,12 +7,12 @@
 
 #include <memory>
 
-class GameScene final : public Scene {
+class GameScene final : public Scene
+{
 public:
     GameScene() = default;
-    void InitScene(const std::shared_ptr<Settings>& setting,
-                   const std::shared_ptr<Window>& window);
-    ~GameScene() override;
+    void InitScene(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window);
+    ~GameScene() override = default;
     void Update() override;
     void Render() override;
     void Event(sf::Event& event) override;
