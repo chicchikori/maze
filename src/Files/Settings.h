@@ -11,7 +11,8 @@
 
 class Window;
 
-class Settings {
+class Settings
+{
 public:
     explicit Settings(const std::shared_ptr<Window>& window);
 
@@ -20,58 +21,72 @@ public:
     void SaveAs();
     void Center();
 
-    [[nodiscard]] sf::Vector2u GetMazeSize() const {
+    [[nodiscard]] sf::Vector2u GetMazeSize() const
+    {
         return mazeSize;
     }
 
-    [[nodiscard]] sf::Vector2u GetWindowSize() const {
+    [[nodiscard]] sf::Vector2u GetWindowSize() const
+    {
         return windowSize;
     }
 
-    [[nodiscard]] int GetSeeds() const {
+    [[nodiscard]] int GetSeeds() const
+    {
         return seeds;
     }
 
-    [[nodiscard]] float GetSize() const {
+    [[nodiscard]] float GetSize() const
+    {
         return size;
     }
 
-    [[nodiscard]] sf::Vector2f GetOffset() const {
+    [[nodiscard]] sf::Vector2f GetOffset() const
+    {
         return offset;
     }
 
-    [[nodiscard]] sf::Color GetGreen() const {
+    [[nodiscard]] sf::Color GetGreen() const
+    {
         return green;
     }
 
-    [[nodiscard]] sf::Color GetBlack() const {
+    [[nodiscard]] sf::Color GetBlack() const
+    {
         return black;
     }
 
-    [[nodiscard]] sf::Color GetRed() const {
+    [[nodiscard]] sf::Color GetRed() const
+    {
         return red;
     }
 
-    [[nodiscard]] sf::Color GetWhite() const {
+    [[nodiscard]] sf::Color GetWhite() const
+    {
         return white;
     }
 
     // Setters (only for mutable fields)
-    void SetMazeSize(const sf::Vector2u& sizes) {
+    void SetMazeSize(const sf::Vector2u& sizes)
+    {
         mazeSize = sizes;
     }
 
-    void SetWindowSize(const sf::Vector2u& sizes) {
+    void SetWindowSize(const sf::Vector2u& sizes)
+    {
         windowSize = sizes;
     }
 
-    void SetSeeds(int s) {
+    void SetSeeds(int s)
+    {
         seeds = s;
     }
 
     void UpdateSeed();
 
     void SetDefault();
+
+    static std::filesystem::path SjisToPath(const std::string& sjis);
 
 private:
     std::shared_ptr<Window> window;
@@ -91,6 +106,6 @@ private:
 
     std::filesystem::path path;
     const std::filesystem::path settingFile{"./Assets/Setting.json"};
-    char const* filePattern[1] = {"*.maze"};
+    std::array<const char*, 1> filePattern = {"*.maze"};
     nlohmann::json settingJson;
 };

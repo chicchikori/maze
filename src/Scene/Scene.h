@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../Files/Settings.h"
-#include "../Window/PopUp.h"
 
 #include <SFML/Graphics.hpp>
 #include <memory>
@@ -13,7 +12,6 @@ enum class SceneState
     SaveAsImage,
     Setting,
     Save,
-    Load,
 };
 
 class Scene
@@ -27,7 +25,7 @@ public:
     virtual void Render();
 
 protected:
-    std::shared_ptr<Settings> GetSetting() const
+    [[nodiscard]] std::shared_ptr<Settings> GetSetting() const
     {
         return settings;
     };

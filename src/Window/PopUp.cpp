@@ -1,7 +1,7 @@
 #include "PopUp.h"
 
 #include "../Maze/UnionFind/UnionFind.h"
-#include "../Util/Fonts.h"
+#include "../UI/Fonts.h"
 
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Font.hpp>
