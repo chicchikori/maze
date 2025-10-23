@@ -41,6 +41,7 @@ src/Maze/ControlMaze/Timer.cpp
 src/Scene/Scene.cpp
 src/Scene/GameScene.cpp
 src/Files/tinyfiledialogs.c
+src/UI/Fonts.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
