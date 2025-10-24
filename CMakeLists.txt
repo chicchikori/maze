@@ -43,6 +43,7 @@ src/Scene/GameScene.cpp
 src/Files/tinyfiledialogs.c
 src/UI/Fonts.cpp
 src/UI/RoundedRectangle.cpp
+src/UI/Button.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
