@@ -9,8 +9,10 @@
 
 
 Button::RoundedButton::RoundedButton(const std::shared_ptr<Window>& window, unsigned int res, sf::Vector2f size,
-                                     float round, const std::string& label) :
-    RoundedRectangle(res, size, round), window(window), label(Fonts::font, label, 16)
+                                     float round, const std::string& label, sf::Color normalColor, sf::Color hoverColor,
+                                     sf::Color activeColor) :
+    RoundedRectangle(res, size, round), window(window), normalColor(normalColor), hoverColor(hoverColor),
+    activeColor(activeColor), label(Fonts::font, label, 16)
 {
     CalcLabelPos();
 }
@@ -48,6 +50,14 @@ void Button::RoundedButton::Render()
     window->GetWindow()->draw(*this);
     window->GetWindow()->draw(label);
 }
+
+void Button::RoundedButton::SetColor(sf::Color normalColor, sf::Color hoverColor, sf::Color activeColor)
+{
+    this->normalColor = normalColor;
+    this->hoverColor = hoverColor;
+    this->activeColor = activeColor;
+}
+
 void Button::RoundedButton::SetSize(sf::Vector2f size)
 {
     RoundedRectangle::SetSize(size);
