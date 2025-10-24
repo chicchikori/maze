@@ -1,0 +1,13 @@
+!.gitignore
+!CMakeLists.txt
+!main.cpp
+!src/
+.vscode/
+.vs/
+.idea/
+.cache/
+build/
+.clang-format
+.clang-tidy
+CMakePresets.json
+compile_flags.txt

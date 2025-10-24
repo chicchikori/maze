@@ -8,17 +8,20 @@
 #include <SFML/Graphics/Text.hpp>
 #include <memory>
 
-class PopUp {
+class PopUp
+{
 public:
     PopUp();
-    explicit PopUp(const std::shared_ptr<Window>& window);
+    explicit PopUp(const std::shared_ptr<Window>& window, const std::shared_ptr<Settings>& settings);
     void PopProgress();
 
-    void SetSize(const int num) {
+    void SetSize(const int num)
+    {
         size = num;
     };
 
 private:
+    std::shared_ptr<Settings> setting;
     std::shared_ptr<Window> window;
     sf::Font& GetFont();
     sf::RectangleShape progressBar;

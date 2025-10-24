@@ -29,7 +29,7 @@ void PrintMaze::AddInfo(const std::vector<std::shared_ptr<rc::Point>>& boxes,
 
 void PrintMaze::Create() {
     mazeImage = sf::Image((settings->GetMazeSize() + sf::Vector2u(2, 2)) *
-                          static_cast<unsigned>(IMAGE_ROAD_SIZE),
+                              static_cast<unsigned>(IMAGE_ROAD_SIZE),
                           settings->GetWhite());
     for (const auto& boxes : box) {
         if (!(boxes->isTop)) {
@@ -57,9 +57,8 @@ void PrintMaze::Create() {
         const sf::Vector2u v2{
             sf::Vector2u(static_cast<unsigned>(IMAGE_ROAD_SIZE / 2.f),
                          static_cast<unsigned>(IMAGE_ROAD_SIZE / 2.f)) +
-            static_cast<sf::Vector2u>(
-                (answer[i + 1] + sf::Vector2f(1, 1)) *
-                static_cast<float>(IMAGE_ROAD_SIZE))};
+            static_cast<sf::Vector2u>((answer[i + 1] + sf::Vector2f(1, 1)) *
+                                      static_cast<float>(IMAGE_ROAD_SIZE))};
         AddLine(v1, v2, true);
     }
 }
@@ -67,8 +66,7 @@ void PrintMaze::Create() {
 bool PrintMaze::Save() {
     Create();
     auto saveDirectory = std::filesystem::path(
-        tinyfd_selectFolderDialog(
-            "select save folder", ""));
+        tinyfd_selectFolderDialog("select save folder", ""));
     saveDirectory += "\\maze";
     const auto mazePath = saveDirectory.replace_filename("maze.png");
     const bool isSuccessMaze = mazeImage.saveToFile(mazePath);
@@ -90,7 +88,7 @@ void PrintMaze::AddLine(const sf::Vector2u p1, const sf::Vector2u p2,
 
     const auto dir = sf::Vector2i(p2 - p1);
     const int length = p1.x == p2.x ? std::abs(dir.y) : std::abs(dir.x);
-    const sf::Vector2i step(
+    const sf::Vector2i lineNormal(
         std::clamp(static_cast<int>(p2.x) - static_cast<int>(p1.x), -1, 1),
         std::clamp(static_cast<int>(p2.y) - static_cast<int>(p1.y), -1, 1));
 
@@ -98,16 +96,15 @@ void PrintMaze::AddLine(const sf::Vector2u p1, const sf::Vector2u p2,
         p1.x == p2.x ? sf::Vector2i(1, 0) : sf::Vector2i(0, 1);
 
     auto& image = isAnswer ? answerImage : mazeImage;
-    const sf::Color color = isAnswer
-                                ? settings->GetRed()
-                                : settings->GetBlack();
+    const sf::Color color =
+        isAnswer ? settings->GetRed() : settings->GetBlack();
 
     for (int i = -IMAGE_WALL_SIZE; i <= length + IMAGE_WALL_SIZE; i++) {
         for (int w = -IMAGE_WALL_SIZE; w <= IMAGE_WALL_SIZE; w++) {
-            if (sf::Vector2i pos = sf::Vector2i(p1) + step * i + crossNormal * w
-                ;
-                pos.x >= 0 && pos.y >= 0 && pos.x < static_cast<int>(image.
-                    getSize().x) &&
+            if (sf::Vector2i pos =
+                    sf::Vector2i(p1) + lineNormal * i + crossNormal * w;
+                pos.x >= 0 && pos.y >= 0 &&
+                pos.x < static_cast<int>(image.getSize().x) &&
                 pos.y < static_cast<int>(image.getSize().y)) {
                 image.setPixel(sf::Vector2u(pos), color);
             }

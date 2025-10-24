@@ -41,12 +41,17 @@ src/Maze/ControlMaze/Timer.cpp
 src/Scene/Scene.cpp
 src/Scene/GameScene.cpp
 src/Files/tinyfiledialogs.c
+src/UI/Fonts.cpp
+src/UI/RoundedRectangle.cpp
+src/UI/Button.cpp
+
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 
 set(ASSETS_FONT_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets/Fonts")
+
 set(FONT_DEST "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Assets/Fonts/Inter.ttf")
 set(INTER_TTF ${inter_SOURCE_DIR}/extras/ttf/Inter-Regular.ttf)
 
