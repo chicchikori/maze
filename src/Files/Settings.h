@@ -8,7 +8,6 @@
 #include <filesystem>
 #include <nlohmann/json.hpp>
 #include <string>
-#define MENU_BAR_HEIGHT 16
 
 class Window;
 
@@ -30,11 +29,6 @@ public:
     [[nodiscard]] sf::Vector2u GetWindowSize() const
     {
         return windowSize;
-    }
-
-    [[nodiscard]] sf::Vector2u GetDisplaySize() const
-    {
-        return {windowSize.x, windowSize.y - MENU_BAR_HEIGHT};
     }
 
     [[nodiscard]] int GetSeeds() const
