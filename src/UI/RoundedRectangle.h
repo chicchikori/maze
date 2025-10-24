@@ -11,8 +11,8 @@ public:
     void SetRound(float round);
     float GetRound() const;
 
-    void SetSize(sf::Vector2f size);
-    sf::Vector2f GetSize();
+    virtual void SetSize(sf::Vector2f size);
+    sf::Vector2f GetSize() const;
 
     void SetResolution(unsigned int res);
     unsigned int GetResolution() const;

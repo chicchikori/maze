@@ -48,7 +48,7 @@ void RoundedRectangle::SetSize(sf::Vector2f size)
     CalcRound();
 }
 
-sf::Vector2f RoundedRectangle::GetSize()
+sf::Vector2f RoundedRectangle::GetSize() const
 {
     return mSize;
 }
