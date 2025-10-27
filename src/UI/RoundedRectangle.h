@@ -6,7 +6,7 @@
 class RoundedRectangle : public sf::Shape
 {
 public:
-    RoundedRectangle(unsigned int res = 0, sf::Vector2f size = {}, float round = 0);
+    RoundedRectangle(unsigned int res = 0, sf::Vector2f size = {10, 10}, float round = 0);
 
     void SetRound(float round);
     float GetRound() const;
@@ -23,11 +23,10 @@ public:
 
 
 private:
-    void CalcRound();
-    void AddEdge(sf::Vector2f center, sf::Angle startAngle, sf::Angle step);
-
+    sf::Vector2f AddEdge(sf::Vector2f center, sf::Angle startAngle, sf::Angle step, int i) const;
+    void CalcSRound();
     float mRound{0};
+    float sRound{0};
     unsigned int resolution{5};
     sf::Vector2f mSize{0, 0};
-    std::vector<sf::Vector2f> mPoints;
 };

@@ -5,6 +5,7 @@
 #include <SFML/System/String.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <cstddef>
+#include <cstdlib>
 #include <utility>
 struct Vec2Hash
 {
@@ -66,6 +67,6 @@ inline sf::Vector2f GetLocalSize(const sf::Text& text)
         }
     }
 
-    const auto lineHeight = static_cast<float>(text.getFont().getLineSpacing(text.getCharacterSize()));
-    return {maxLineWidth, lines * lineHeight};
+    const float lineHeight = static_cast<int>(text.getFont().getLineSpacing(text.getCharacterSize()));
+    return {abs(maxLineWidth), lines * lineHeight};
 }

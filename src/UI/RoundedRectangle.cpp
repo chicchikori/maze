@@ -1,10 +1,11 @@
 #include "RoundedRectangle.h"
+#include <SFML/Graphics/Shape.hpp>
 #include <SFML/System/Angle.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
-#include <iostream>
+
 
 RoundedRectangle::RoundedRectangle(unsigned int res, sf::Vector2f size, float round)
 {
@@ -16,7 +17,7 @@ RoundedRectangle::RoundedRectangle(unsigned int res, sf::Vector2f size, float ro
 void RoundedRectangle::SetResolution(unsigned int res)
 {
     resolution = res;
-    CalcRound();
+    update();
 }
 
 unsigned int RoundedRectangle::GetResolution() const
@@ -26,15 +27,9 @@ unsigned int RoundedRectangle::GetResolution() const
 
 void RoundedRectangle::SetRound(float round)
 {
-    if (const auto minSize = std::min(mSize.x, mSize.y); round * 2 > minSize)
-    {
-        mRound = minSize / 2;
-    }
-    else
-    {
-        mRound = round;
-    }
-    CalcRound();
+    mRound = round;
+    CalcSRound();
+    update();
 }
 
 float RoundedRectangle::GetRound() const
@@ -45,7 +40,8 @@ float RoundedRectangle::GetRound() const
 void RoundedRectangle::SetSize(sf::Vector2f size)
 {
     mSize = size;
-    CalcRound();
+    CalcSRound();
+    update();
 }
 
 sf::Vector2f RoundedRectangle::GetSize() const
@@ -55,13 +51,38 @@ sf::Vector2f RoundedRectangle::GetSize() const
 
 std::size_t RoundedRectangle::getPointCount() const
 {
-    return mPoints.size();
+    return (resolution + 1) * 4;
 }
 
 sf::Vector2f RoundedRectangle::getPoint(std::size_t index) const
 {
-    assert(index < mPoints.size() && "Index is out of bounds");
-    return mPoints[index];
+    int pointCount = getPointCount();
+    assert(index < pointCount && "Index is out of bounds");
+    const unsigned int corner = /* std::floor */ (index / /* (pointCount / 4.f) */ (resolution + 1));
+    const sf::Angle step = (sRound != 0) ? sf::degrees(90) / resolution : sf::degrees(90);
+    const unsigned int localIndex = index % (resolution + 1);
+
+    switch (corner)
+    {
+    case 0:
+        // top left
+        return AddEdge({sRound, sRound}, sf::degrees(180), step, localIndex);
+        break;
+    case 1:
+        // top right
+        return AddEdge({mSize.x - sRound, sRound}, sf::degrees(270), step, localIndex);
+        break;
+    case 2:
+        // bottom right
+        return AddEdge({mSize.x - sRound, mSize.y - sRound}, sf::degrees(0), step, localIndex);
+        break;
+    case 3:
+        // bottom left
+        return AddEdge({sRound, mSize.y - sRound}, sf::degrees(90), step, localIndex);
+        break;
+    default:
+        return {0, 0};
+    }
 }
 
 sf::Vector2f RoundedRectangle::getGeometricCenter() const
@@ -69,32 +90,20 @@ sf::Vector2f RoundedRectangle::getGeometricCenter() const
     return mSize / 2.f;
 }
 
-void RoundedRectangle::AddEdge(sf::Vector2f center, sf::Angle startAngle, sf::Angle step)
+sf::Vector2f RoundedRectangle::AddEdge(sf::Vector2f center, sf::Angle startAngle, sf::Angle step, int i) const
 {
-    for (int i = 0; i < resolution + 1; i++)
-    {
-        mPoints.emplace_back(center.x + std::sin((startAngle + step * -i).asRadians()) * mRound,
-                             center.y - std::cos((startAngle + step * -i).asRadians()) * mRound);
-    }
+    return {center.x + std::cos((startAngle + step * i).asRadians()) * sRound,
+            center.y + std::sin((startAngle + step * i).asRadians()) * sRound};
 }
 
-void RoundedRectangle::CalcRound()
+void RoundedRectangle::CalcSRound()
 {
-    mPoints.clear();
-    std::cout << mPoints.size() << "\n";
-    sf::Angle step;
-    if (mRound != 0)
+    if (const auto minSize = std::min(mSize.x, mSize.y); mRound * 2 > minSize)
     {
-        step = sf::degrees(90) / resolution;
+        sRound = minSize / 2;
     }
     else
     {
-        step = sf::degrees(90);
+        sRound = mRound;
     }
-    AddEdge({mRound, mRound}, sf::degrees(0), step);
-    AddEdge({mRound, mSize.y - mRound}, sf::degrees(270), step);
-    AddEdge({mSize.x - mRound, mSize.y - mRound}, sf::degrees(180), step);
-    AddEdge({mSize.x - mRound, mRound}, sf::degrees(90), step);
-    std::cout << mPoints.size() << "\n";
-    update();
 }
