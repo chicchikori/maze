@@ -16,7 +16,8 @@ namespace Button
     class RoundedButton : public RoundedRectangle
     {
     public:
-        RoundedButton(const std::shared_ptr<Window>& window = nullptr, unsigned int res = 0, sf::Vector2f size = {},
+        RoundedButton();
+        RoundedButton(const std::shared_ptr<Window>& window, unsigned int res = 0, sf::Vector2f size = {},
                       float round = 0, const std::string& label = "", sf::Color normalColor = {100, 100, 100},
                       sf::Color hoverColor = {80, 80, 80}, sf::Color activeColor = {30, 30, 30});
         void Event(sf::Event& event);
@@ -44,9 +45,16 @@ namespace Button
             return activeColor;
         }
 
+        std::string GetLabel() const
+        {
+            return label.getString();
+        }
+
         void SetSize(sf::Vector2f size) override;
         void SetPosition(sf::Vector2f pos);
         void setPosition(sf::Vector2f position) = delete;
+
+        void SetLabel(const std::string& label);
 
     private:
         void CalcLabelPos();
