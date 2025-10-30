@@ -18,13 +18,13 @@ void Timer::Init(const std::shared_ptr<Settings>& setting, const std::shared_ptr
     timerText.setFillColor(settings->GetWhite());
 }
 
-void Timer::start()
+void Timer::Start()
 {
     isUseEnd = false;
     begin = std::chrono::high_resolution_clock::now();
 }
 
-void Timer::stop()
+void Timer::Stop()
 {
     if (!isUseEnd)
     {
@@ -33,7 +33,7 @@ void Timer::stop()
     }
 }
 
-void Timer::update()
+void Timer::Update()
 {
     auto time = std::chrono::duration_cast<std::chrono::milliseconds>(
         (isUseEnd ? end : std::chrono::high_resolution_clock::now()) - begin);
@@ -45,7 +45,7 @@ void Timer::update()
     timerText.setPosition(sf::Vector2f(settings->GetWindowSize().x, 0));
 }
 
-void Timer::renderTimer() const
+void Timer::RenderTimer() const
 {
     window->GetWindow()->draw(timerText);
 }

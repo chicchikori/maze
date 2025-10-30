@@ -13,10 +13,10 @@ class Timer {
     Timer();
     void Init(const std::shared_ptr<Settings>& setting,
               const std::shared_ptr<Window>& window);
-    void start();
-    void stop();
-    void renderTimer() const;
-    void update();
+    void Start();
+    void Stop();
+    void RenderTimer() const;
+    void Update();
 
    private:
     std::shared_ptr<Settings> settings;
