@@ -2,6 +2,7 @@
 
 #include "../Maze/UnionFind/UnionFind.h"
 #include "../UI/Fonts.h"
+#include "../Util/Variables.h"
 
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Font.hpp>
@@ -10,9 +11,7 @@
 #include <format>
 #include <memory>
 
-#define popSize sf::Vector2f(400, 100)
-#define progressbarWidth 10
-#define margin 10.f
+
 
 PopUp::PopUp() : progressPercentText(Fonts::font, "", 16)
 {

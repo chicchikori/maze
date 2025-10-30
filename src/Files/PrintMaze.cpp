@@ -10,8 +10,7 @@
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
-#define IMAGE_ROAD_SIZE 15
-#define IMAGE_WALL_SIZE 1
+#include "../Util/Variables.h"
 
 PrintMaze::PrintMaze(const std::shared_ptr<Settings>& setting,
                      const std::vector<std::shared_ptr<rc::Point>>& boxes,

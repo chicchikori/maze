@@ -22,7 +22,7 @@ std::filesystem::path Settings::SjisToPath(const std::string& sjis)
 }
 
 Settings::Settings(const std::shared_ptr<Window>& window) :
-    window(window), mazeSize(10, 10), seeds(), updateSeed(false), size(0)
+    window(window), mazeSize(100, 100), seeds(), updateSeed(false), size(0)
 {
 }
 
@@ -49,20 +49,23 @@ void Settings::SaveAs()
 void Settings::Center()
 {
     const auto windowMazeSize = mazeSize + sf::Vector2u(2, 2);
-    const sf::Vector2f windowMazeUSize(static_cast<float>(windowSize.x) / static_cast<float>(windowMazeSize.x),
-                                       static_cast<float>(windowSize.y) / static_cast<float>(windowMazeSize.y));
+    const sf::Vector2f windowMazeUSize(
+        static_cast<float>(windowSize.x) / static_cast<float>(windowMazeSize.x),
+        static_cast<float>(windowSize.y - MENU_BAR_HEIGHT) / static_cast<float>(windowMazeSize.y));
 
     if (windowMazeUSize.x > windowMazeUSize.y)
     {
         size = windowMazeUSize.y;
         offset = sf::Vector2f(
-            (static_cast<float>(windowSize.x) - (static_cast<float>(windowMazeSize.x) - 2) * size) / 2.f, size);
+            (static_cast<float>(windowSize.x) - (static_cast<float>(windowMazeSize.x) - 2) * size) / 2.f, size+MENU_BAR_HEIGHT);
     }
     else
     {
         size = windowMazeUSize.x;
         offset = sf::Vector2f(
-            size, (static_cast<float>(windowSize.y) - (static_cast<float>(windowMazeSize.y) - 2) * size) / 2.f);
+            size,
+            (static_cast<float>(windowSize.y) - (static_cast<float>(windowMazeSize.y) - 2) * size) /
+                2.f);
     }
 }
 
@@ -116,8 +119,8 @@ void Settings::SetFromJson(const std::string& content)
     }
     seeds = settingJson.value("seed", 0);
     updateSeed = settingJson.value("updateSeed", true);
-    mazeSize = {settingJson.value("mazeSize", nlohmann::basic_json<>()).value("x", 10u),
-                settingJson.value("mazeSize", nlohmann::basic_json<>()).value("y", 10u)};
+    mazeSize = {settingJson.value("mazeSize", nlohmann::basic_json<>()).value("x", 100u),
+                settingJson.value("mazeSize", nlohmann::basic_json<>()).value("y", 100u)};
     windowSize = {settingJson.value("windowSize", nlohmann::basic_json<>()).value("width", 500u),
                   settingJson.value("windowSize", nlohmann::basic_json<>()).value("height", 400u)};
     if (settingJson.value("fullscreen", false))

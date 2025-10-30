@@ -62,17 +62,19 @@ void Button::RoundedButton::SetSize(sf::Vector2f size)
 {
     RoundedRectangle::SetSize(size);
     CalcLabelPos();
+    RoundedRectangle::update();
 }
 
 void Button::RoundedButton::SetPosition(sf::Vector2f pos)
 {
     RoundedRectangle::setPosition(pos);
     CalcLabelPos();
+    RoundedRectangle::update();
 }
 
 void Button::RoundedButton::CalcLabelPos()
 {
     const auto size = GetLocalSize(label);
-    label.setOrigin(size / 2.f);
-    label.setPosition(this->getGlobalBounds().position + this->getGeometricCenter());
+    label.setOrigin(sf::Vector2f(sf::Vector2i(size / 2.f)));
+    label.setPosition(this->getGlobalBounds().position + sf::Vector2f(sf::Vector2i(this->getGeometricCenter())));
 }
