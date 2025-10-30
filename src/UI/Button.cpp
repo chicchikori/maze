@@ -8,12 +8,15 @@
 #include "RoundedRectangle.h"
 
 
+Button::RoundedButton::RoundedButton() : label(Fonts::font) {};
+
 Button::RoundedButton::RoundedButton(const std::shared_ptr<Window>& window, unsigned int res, sf::Vector2f size,
                                      float round, const std::string& label, sf::Color normalColor, sf::Color hoverColor,
                                      sf::Color activeColor) :
     RoundedRectangle(res, size, round), window(window), normalColor(normalColor), hoverColor(hoverColor),
     activeColor(activeColor), label(Fonts::font, label, 16)
 {
+    this->label.setFillColor(sf::Color::White);
     CalcLabelPos();
 }
 
@@ -77,4 +80,10 @@ void Button::RoundedButton::CalcLabelPos()
     const auto size = GetLocalSize(label);
     label.setOrigin(sf::Vector2f(sf::Vector2i(size / 2.f)));
     label.setPosition(this->getGlobalBounds().position + sf::Vector2f(sf::Vector2i(this->getGeometricCenter())));
+}
+
+void Button::RoundedButton::SetLabel(const std::string& label)
+{
+    this->label.setString(label);
+    CalcLabelPos();
 }

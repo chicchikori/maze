@@ -3,12 +3,11 @@
 #include "../Files/PrintMaze.h"
 #include "../Maze/ControlMaze/Timer.h"
 #include "../Maze/UnionFind/UnionFind.h"
-#include "../UI/Button.h"
+#include "../UI/MenuItem.h"
 #include "Scene.h"
 
 
 #include <SFML/Graphics/RectangleShape.hpp>
-#include <array>
 #include <memory>
 
 class GameScene final : public Scene
@@ -23,21 +22,13 @@ public:
     void Exit();
 
 private:
-    void CalcMenuBar();
     std::shared_ptr<Settings> settings;
     std::shared_ptr<Window> window;
     Timer timer;
     Uf::UnionFind uf;
 
     bool isAnswer = true;
-
-    sf::RectangleShape menuBarBackground;
-    Button::RoundedButton toggleFileTab;
-
-    RoundedRectangle fileTab;
-    std::array<Button::RoundedButton, 4> fileTabLists;
-
-    bool isFileTabActive{false};
+    Menu::MenuItem dd;
 
     PrintMaze printer;
     Cont::Control controller;
