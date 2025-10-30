@@ -44,6 +44,8 @@ src/Files/tinyfiledialogs.c
 src/UI/Fonts.cpp
 src/UI/RoundedRectangle.cpp
 src/UI/Button.cpp
+src/UI/MenuItem.cpp
+src/UI/Dropdown.cpp
 
 )
 

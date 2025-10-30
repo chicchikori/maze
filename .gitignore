@@ -6,7 +6,6 @@
 .vs/
 .idea/
 .cache/
-build/
 .clang-format
 .clang-tidy
 CMakePresets.json
