@@ -2,6 +2,7 @@
 
 
 #include <SFML/Graphics.hpp>
+#include <cassert>
 
 void GameScene::InitScene(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window)
 {
@@ -12,13 +13,13 @@ void GameScene::InitScene(const std::shared_ptr<Settings>& setting, const std::s
     printer = PrintMaze(setting);
     controller = Cont::Control(setting, window);
     settings = setting;
-    dd = Menu::MenuItem(window, setting, "Files", {"Save", "Save As", "Load", "Quit"});
+    menu = Menu::Menu(window, setting);
 }
 
 void GameScene::Update()
 {
     timer.Update();
-    dd.Update();
+    menu.Update();
 }
 
 void GameScene::Render()
@@ -43,13 +44,13 @@ void GameScene::Render()
             }
             timer.RenderTimer();
         }
-        dd.Render();
+        menu.Render();
     }
 }
 
 void GameScene::Event(sf::Event& event)
 {
-    dd.Event(event);
+    menu.Event(event);
     if (auto* const key = event.getIf<sf::Event::KeyPressed>())
     {
         switch (key->code)

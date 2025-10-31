@@ -28,7 +28,7 @@ private:
     Uf::UnionFind uf;
 
     bool isAnswer = true;
-    Menu::MenuItem dd;
+    Menu::Menu menu;
 
     PrintMaze printer;
     Cont::Control controller;

@@ -13,13 +13,32 @@
 
 namespace Button
 {
+    enum class AlignRL
+    {
+        CENTER,
+        RIGHT,
+        LEFT,
+    };
+    enum class AlignUB
+    {
+        CENTER,
+        TOP,
+        BOTTOM,
+    };
+    struct LabelAlign
+    {
+        AlignRL rl = AlignRL::CENTER;
+        AlignUB tb = AlignUB::CENTER;
+    };
     class RoundedButton : public RoundedRectangle
     {
     public:
         RoundedButton();
         RoundedButton(const std::shared_ptr<Window>& window, unsigned int res = 0, sf::Vector2f size = {},
-                      float round = 0, const std::string& label = "", sf::Color normalColor = {100, 100, 100},
-                      sf::Color hoverColor = {80, 80, 80}, sf::Color activeColor = {30, 30, 30});
+                      float round = 0, const std::string& label = "",
+                      LabelAlign align = {.rl = AlignRL::CENTER, .tb = AlignUB::CENTER},
+                      sf::Color normalColor = {100, 100, 100}, sf::Color hoverColor = {80, 80, 80},
+                      sf::Color activeColor = {30, 30, 30});
         void Event(sf::Event& event);
         void Render();
         void SetColor(sf::Color normalColor, sf::Color hoverColor, sf::Color activeColor);
@@ -57,7 +76,8 @@ namespace Button
         void SetLabel(const std::string& label);
 
     private:
-        void CalcLabelPos();
+        void CalcLabelPos(LabelAlign align);
+        LabelAlign align;
         std::shared_ptr<Window> window;
         sf::Color normalColor{100, 100, 100};
         sf::Color hoverColor{80, 80, 80};

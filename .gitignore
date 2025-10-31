@@ -10,3 +10,4 @@
 .clang-tidy
 CMakePresets.json
 compile_flags.txt
+/build

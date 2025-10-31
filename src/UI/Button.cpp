@@ -8,16 +8,16 @@
 #include "RoundedRectangle.h"
 
 
-Button::RoundedButton::RoundedButton() : label(Fonts::font) {};
+Button::RoundedButton::RoundedButton() : align(), label(Fonts::font) {};
 
 Button::RoundedButton::RoundedButton(const std::shared_ptr<Window>& window, unsigned int res, sf::Vector2f size,
-                                     float round, const std::string& label, sf::Color normalColor, sf::Color hoverColor,
-                                     sf::Color activeColor) :
-    RoundedRectangle(res, size, round), window(window), normalColor(normalColor), hoverColor(hoverColor),
+                                     float round, const std::string& label, LabelAlign align, sf::Color normalColor,
+                                     sf::Color hoverColor, sf::Color activeColor) :
+    RoundedRectangle(res, size, round), align(align), window(window), normalColor(normalColor), hoverColor(hoverColor),
     activeColor(activeColor), label(Fonts::font, label, 16)
 {
     this->label.setFillColor(sf::Color::White);
-    CalcLabelPos();
+    CalcLabelPos(align);
 }
 
 void Button::RoundedButton::Event(sf::Event& event)
@@ -64,26 +64,60 @@ void Button::RoundedButton::SetColor(sf::Color normalColor, sf::Color hoverColor
 void Button::RoundedButton::SetSize(sf::Vector2f size)
 {
     RoundedRectangle::SetSize(size);
-    CalcLabelPos();
+    CalcLabelPos(align);
     RoundedRectangle::update();
 }
 
 void Button::RoundedButton::SetPosition(sf::Vector2f pos)
 {
     RoundedRectangle::setPosition(pos);
-    CalcLabelPos();
+    CalcLabelPos(align);
     RoundedRectangle::update();
 }
 
-void Button::RoundedButton::CalcLabelPos()
+void Button::RoundedButton::CalcLabelPos(LabelAlign align)
 {
     const auto size = GetLocalSize(label);
-    label.setOrigin(sf::Vector2f(sf::Vector2i(size / 2.f)));
-    label.setPosition(this->getGlobalBounds().position + sf::Vector2f(sf::Vector2i(this->getGeometricCenter())));
+    sf::Vector2i delta;
+    switch (align.rl)
+    {
+    case AlignRL::LEFT:
+        delta.x = 0;
+        label.setOrigin(sf::Vector2f(0, size.y / 2.f));
+        label.setPosition(this->getGlobalBounds().position +
+                          sf::Vector2f(sf::Vector2i(0, this->getGeometricCenter().y)));
+        break;
+    case AlignRL::RIGHT:
+        delta.x = 2;
+        label.setOrigin(sf::Vector2f(size.x, size.y / 2.f));
+        label.setPosition(this->getGlobalBounds().position +
+                          sf::Vector2f(sf::Vector2i(this->getGeometricCenter().x * 2, this->getGeometricCenter().y)));
+        break;
+    case AlignRL::CENTER:
+        delta.x = 1;
+        break;
+    }
+    switch (align.tb)
+    {
+    case Button::AlignUB::BOTTOM:
+        delta.y = 2;
+        break;
+    case Button::AlignUB::TOP:
+        delta.y = 0;
+        break;
+    case Button::AlignUB::CENTER:
+        delta.y = 1;
+        break;
+    }
+
+    label.setOrigin(sf::Vector2f(size.x * delta.x * 0.5f, size.y * delta.y * 0.5f));
+    label.setPosition(
+        this->getGlobalBounds().position +
+        sf::Vector2f(sf::Vector2i(this->getGeometricCenter().x * delta.x, this->getGeometricCenter().y * delta.y)));
 }
 
 void Button::RoundedButton::SetLabel(const std::string& label)
 {
     this->label.setString(label);
-    CalcLabelPos();
+    CalcLabelPos(align);
 }

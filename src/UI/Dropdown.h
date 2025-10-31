@@ -11,13 +11,15 @@ public:
 
     void Render();
     void Event(sf::Event& event, bool& isDDActive);
+    void Update();
+    int GetActive();
 
-protected:
-    std::unordered_map<std::string, Button::RoundedButton> items;
-    void CalcItem();
 
 private:
+    std::unordered_map<int, Button::RoundedButton> items;
     std::shared_ptr<Window> window;
+    int activeId{-1};
+
 
     RoundedRectangle background;
     sf::Vector2f position;
