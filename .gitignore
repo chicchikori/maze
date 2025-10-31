@@ -11,3 +11,4 @@
 CMakePresets.json
 compile_flags.txt
 /build
+/branch
