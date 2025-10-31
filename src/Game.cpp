@@ -4,6 +4,7 @@
 #include "Maze/UnionFind/UnionFind.h"
 #include "Scene/GameScene.h"
 #include "Scene/Scene.h"
+#include "Util/Variables.h"
 #include "Window/Window.h"
 
 #include <SFML/Graphics.hpp>
@@ -13,9 +14,8 @@
 
 SceneState Game::scene{SceneState::MazeGame};
 
-Game::Game()
+Game::Game() : isOpen(true)
 {
-    isOpen = true;
     window = std::make_shared<Window>();
     settings = std::make_shared<Settings>(window);
 }
@@ -94,7 +94,7 @@ void Game::Update()
 
 void Game::Render()
 {
-    window->GetWindow()->clear(settings->GetBlack());
+    window->GetWindow()->clear(BACKGROUND_COLOR);
     switch (scene)
     {
         using enum SceneState;

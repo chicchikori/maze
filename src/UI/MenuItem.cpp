@@ -19,17 +19,17 @@ namespace Menu
     }
 
     MenuItem::MenuItem(const std::shared_ptr<Window>& window, const std::shared_ptr<Settings>& settings,
-                       const std::string& label, const std::vector<std::string>& item, int id) :
+                       const std::string& label, const std::vector<std::string>& item, int ids) :
         DropDown(
             window, item,
-            {(float)id * MENU_BAR_WIDTH + MENU_BAR_BUTTON_LEFT_MARGIN, MENU_BAR_HEIGHT - MENU_BAR_BUTTON_TOP_MARGIN}),
-        id(id), window(window), setting(settings), label(label)
+            {(float)ids * MENU_BAR_WIDTH + MENU_BAR_BUTTON_LEFT_MARGIN, MENU_BAR_HEIGHT - MENU_BAR_BUTTON_TOP_MARGIN}),
+        id(ids), window(window), setting(settings), label(label)
     {
         mainButton =
             Button::RoundedButton(window, MENU_BAR_BUTTON_ROUND_RES, {MENU_BAR_BUTTON_WIDTH, MENU_BAR_BUTTON_HEIGHT},
-                                  MENU_BAR_BUTTON_ROUND, label, {.rl = Button::AlignRL::LEFT});
-        mainButton.SetPosition({MENU_BAR_WIDTH * (float)id + MENU_BAR_BUTTON_LEFT_MARGIN, MENU_BAR_BUTTON_TOP_MARGIN});
-        mainButton.setFillColor(MENU_BAR_BACKGROUND_COLOR);
+                                  MENU_BAR_BUTTON_ROUND, label);
+        mainButton.SetPosition({MENU_BAR_WIDTH * (float)ids + MENU_BAR_BUTTON_LEFT_MARGIN, MENU_BAR_BUTTON_TOP_MARGIN});
+        mainButton.SetColor(MENU_BAR_BACKGROUND_COLOR, MENU_BAR_HOVER_COLOR, MENU_BAR_ACTIVE_COLOR);
     }
 
     void MenuItem::Event(sf::Event& event)

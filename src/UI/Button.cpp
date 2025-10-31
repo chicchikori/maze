@@ -83,15 +83,16 @@ void Button::RoundedButton::CalcLabelPos(LabelAlign align)
     {
     case AlignRL::LEFT:
         delta.x = 0;
-        label.setOrigin(sf::Vector2f(0, size.y / 2.f));
+        label.setOrigin(sf::Vector2f(0, size.y / 2.F));
         label.setPosition(this->getGlobalBounds().position +
-                          sf::Vector2f(sf::Vector2i(0, this->getGeometricCenter().y)));
+                          sf::Vector2f(sf::Vector2i(0, (int)this->getGeometricCenter().y)));
         break;
     case AlignRL::RIGHT:
         delta.x = 2;
-        label.setOrigin(sf::Vector2f(size.x, size.y / 2.f));
-        label.setPosition(this->getGlobalBounds().position +
-                          sf::Vector2f(sf::Vector2i(this->getGeometricCenter().x * 2, this->getGeometricCenter().y)));
+        label.setOrigin(sf::Vector2f(size.x, size.y / 2.F));
+        label.setPosition(
+            this->getGlobalBounds().position +
+            sf::Vector2f(sf::Vector2i((int)this->getGeometricCenter().x * 2, (int)this->getGeometricCenter().y)));
         break;
     case AlignRL::CENTER:
         delta.x = 1;
@@ -110,10 +111,10 @@ void Button::RoundedButton::CalcLabelPos(LabelAlign align)
         break;
     }
 
-    label.setOrigin(sf::Vector2f(size.x * delta.x * 0.5f, size.y * delta.y * 0.5f));
-    label.setPosition(
-        this->getGlobalBounds().position +
-        sf::Vector2f(sf::Vector2i(this->getGeometricCenter().x * delta.x, this->getGeometricCenter().y * delta.y)));
+    label.setOrigin(sf::Vector2f(size.x * (float)delta.x * 0.5F, size.y * (float)delta.y * 0.5F));
+    label.setPosition(this->getGlobalBounds().position +
+                      sf::Vector2f(sf::Vector2i((int)this->getGeometricCenter().x * delta.x,
+                                                (int)this->getGeometricCenter().y * delta.y)));
 }
 
 void Button::RoundedButton::SetLabel(const std::string& label)
