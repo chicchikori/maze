@@ -23,7 +23,7 @@ public:
 
 
 private:
-    [[nodiscard]] sf::Vector2f AddEdge(sf::Vector2f center, sf::Angle startAngle, sf::Angle step, int index) const;
+    [[nodiscard]] sf::Vector2f AddEdge(sf::Vector2f center, sf::Angle startAngle, sf::Angle step, unsigned int index) const;
     void CalcSRound();
     float mRound{0};
     float sRound{0};

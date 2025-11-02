@@ -34,7 +34,7 @@ namespace Uf
     private:
         void Init();
         bool Find(Cont::Control& controller);
-        bool Unite(const std::shared_ptr<Point>& t1, const std::shared_ptr<Point>& t2);
+        static bool Unite(const std::shared_ptr<Point>& tree1, const std::shared_ptr<Point>& tree2);
         static std::shared_ptr<Point> Root(const std::shared_ptr<Point>& point);
 
         std::shared_ptr<Settings> settings;

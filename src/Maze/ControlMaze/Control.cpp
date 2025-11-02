@@ -14,8 +14,8 @@ Cont::Control::Control(
     route.clear();
     route.emplace_back(0, 0);
     controlLine.clear();
-    AddLine(sf::Vector2f(0, 0), sf::Vector2f(-0.5f, 0));
-    goalPos = sf::Vector2i(settings->GetMazeSize().x - 1, settings->GetMazeSize().y - 1);
+    AddLine(sf::Vector2f(0, 0), sf::Vector2f(-0.5F, 0));
+    goalPos = sf::Vector2i((int)settings->GetMazeSize().x - 1, (int)settings->GetMazeSize().y - 1);
 }
 
 void Cont::Control::Move(const Cont::MoveDir direction)
@@ -67,7 +67,7 @@ void Cont::Control::Update()
 {
     controlLine.clear();
 
-    AddLine(sf::Vector2f(0, 0), sf::Vector2f(-0.5f, 0));
+    AddLine(sf::Vector2f(0, 0), sf::Vector2f(-0.5F, 0));
 
     for (int i = 0; i < route.size() - 1; i++)
     {
@@ -76,18 +76,18 @@ void Cont::Control::Update()
     if (isGoal)
     {
         AddLine(static_cast<sf::Vector2f>(route[route.size() - 1]),
-                static_cast<sf::Vector2f>(route[route.size() - 1]) + sf::Vector2f(0.5f, 0));
+                static_cast<sf::Vector2f>(route[route.size() - 1]) + sf::Vector2f(0.5F, 0));
     }
 }
 
 void Cont::Control::AddLine(const sf::Vector2f pos1, const sf::Vector2f pos2)
 {
-    const sf::Vertex v1{.position = NormalToCenterWindowSize(pos1, settings->GetOffset(), settings->GetSize()),
-                        .color = settings->GetGreen()};
-    const sf::Vertex v2{.position = NormalToCenterWindowSize(pos2, settings->GetOffset(), settings->GetSize()),
-                        .color = settings->GetGreen()};
-    controlLine.append(v1);
-    controlLine.append(v2);
+    const sf::Vertex vectorFrom{.position = NormalToCenterWindowSize(pos1, settings->GetOffset(), settings->GetSize()),
+                                .color = GREEN_COLOR};
+    const sf::Vertex vectorTo{.position = NormalToCenterWindowSize(pos2, settings->GetOffset(), settings->GetSize()),
+                              .color = GREEN_COLOR};
+    controlLine.append(vectorFrom);
+    controlLine.append(vectorTo);
 }
 
 void Cont::Control::Render() const
@@ -96,7 +96,6 @@ void Cont::Control::Render() const
 }
 
 Cont::Control::Control(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window) :
-    settings(setting)
-{
-    this->window = window;
-};
+    settings(setting), window(window) {
+
+    };

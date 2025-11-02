@@ -15,7 +15,7 @@ void Timer::Init(const std::shared_ptr<Settings>& setting, const std::shared_ptr
 {
     this->window = window;
     settings = setting;
-    timerText.setFillColor(settings->GetWhite());
+    timerText.setFillColor(WHITE_COLOR);
 }
 
 void Timer::Start()

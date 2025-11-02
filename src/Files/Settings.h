@@ -52,27 +52,6 @@ public:
     {
         return offset;
     }
-
-    [[nodiscard]] sf::Color GetGreen() const
-    {
-        return green;
-    }
-
-    [[nodiscard]] sf::Color GetBlack() const
-    {
-        return black;
-    }
-
-    [[nodiscard]] sf::Color GetRed() const
-    {
-        return red;
-    }
-
-    [[nodiscard]] sf::Color GetWhite() const
-    {
-        return white;
-    }
-
     // Setters (only for mutable fields)
     void SetMazeSize(const sf::Vector2u& sizes)
     {
@@ -84,9 +63,9 @@ public:
         windowSize = sizes;
     }
 
-    void SetSeeds(int s)
+    void SetSeeds(int seed)
     {
-        seeds = s;
+        seeds = seed;
     }
 
     void UpdateSeed();
@@ -104,15 +83,15 @@ private:
     float size;
     sf::Vector2f offset;
 
-    const sf::Color green{130, 178, 108};
+    /* const sf::Color green{130, 178, 108};
     const sf::Color black{54, 57, 59};
     const sf::Color red{242, 84, 84};
-    const sf::Color white{243, 243, 244};
+    const sf::Color white{243, 243, 244}; */
     void ImportMaze();
     void SetFromJson(const std::string& content);
 
     std::filesystem::path path;
-    const std::filesystem::path settingFile{"./Assets/Setting.json"};
+    std::filesystem::path settingFile{SETTING_FILE_PATH};
     std::array<const char*, 1> filePattern = {"*.maze"};
     nlohmann::json settingJson;
 };

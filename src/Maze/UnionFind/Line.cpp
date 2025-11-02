@@ -9,30 +9,30 @@
 #include <unordered_set>
 
 std::vector<sf::Vector2f> Line::SolveMaze(const std::unordered_set<std::shared_ptr<Uf::Edge>>& edges,
-                                          sf::Vector2i start, sf::Vector2i goal) const
+                                          sf::Vector2i start, sf::Vector2i goal)
 {
     using Graph = std::unordered_map<sf::Vector2i, std::vector<sf::Vector2i>, Vec2Hash>;
 
     Graph graph;
-    for (auto& e : edges)
+    for (auto& edge : edges)
     {
-        graph[e->from->posision].push_back(e->to->posision);
-        graph[e->to->posision].push_back(e->from->posision);
+        graph[edge->from->posision].push_back(edge->to->posision);
+        graph[edge->to->posision].push_back(edge->from->posision);
     }
 
     std::unordered_map<sf::Vector2i, sf::Vector2i, Vec2Hash> parent;
     std::unordered_set<sf::Vector2i, Vec2Hash> visited;
-    std::stack<sf::Vector2i> st;
+    std::stack<sf::Vector2i> stack;
 
-    st.push(start);
+    stack.push(start);
     visited.insert(start);
     parent[start] = {-1, -1};
 
     bool found = false;
-    while (!st.empty())
+    while (!stack.empty())
     {
-        sf::Vector2i cur = st.top();
-        st.pop();
+        sf::Vector2i cur = stack.top();
+        stack.pop();
         if (cur == goal)
         {
             found = true;
@@ -45,13 +45,16 @@ std::vector<sf::Vector2f> Line::SolveMaze(const std::unordered_set<std::shared_p
             {
                 visited.insert(nxt);
                 parent[nxt] = cur;
-                st.push(nxt);
+                stack.push(nxt);
             }
         }
     }
 
     std::vector<sf::Vector2f> path;
-    if (!found) return path;
+    if (!found)
+    {
+        return path;
+    }
 
     sf::Vector2i cur = goal;
     while (cur.x != -1 && cur.y != -1)
@@ -71,10 +74,11 @@ void Line::UpdateLine(const std::unordered_set<std::shared_ptr<Uf::Edge>>& trees
         AddMazeLine(sf::Vector2f(tree->from->posision), sf::Vector2f(tree->to->posision));
     }
     answerLine.clear();
-    answerRoute = SolveMaze(trees, {0, 0}, sf::Vector2i(settings->GetMazeSize().x - 1, settings->GetMazeSize().y - 1));
-    answerRoute.emplace(answerRoute.begin(), (float)settings->GetMazeSize().x - 0.5f,
+    answerRoute =
+        SolveMaze(trees, {0, 0}, sf::Vector2i((int)settings->GetMazeSize().x - 1, (int)settings->GetMazeSize().y - 1));
+    answerRoute.emplace(answerRoute.begin(), (float)settings->GetMazeSize().x - 0.5F,
                         (float)settings->GetMazeSize().y - 1);
-    answerRoute.emplace_back(-0.5f, 0);
+    answerRoute.emplace_back(-0.5F, 0);
     for (int i = 0; i < answerRoute.size() - 1; i++)
     {
         AddAnswerLine(i);
@@ -87,20 +91,20 @@ void Line::AddAnswerLine(int index)
     {
         sf::Vertex vert{
             .position = NormalToCenterWindowSize(answerRoute[index + i], settings->GetOffset(), settings->GetSize()),
-            .color = settings->GetRed()};
+            .color = RED_COLOR};
         answerLine.append(vert);
     }
 }
 
-void Line::AddMazeLine(sf::Vector2f from, sf::Vector2f to)
+void Line::AddMazeLine(sf::Vector2f vecFrom, sf::Vector2f vecTo)
 {
-    sf::Vertex v1{.position = NormalToCenterWindowSize(from, settings->GetOffset(), settings->GetSize()),
-                  .color = settings->GetWhite()};
-    sf::Vertex v2{.position = NormalToCenterWindowSize(to, settings->GetOffset(), settings->GetSize()),
-                  .color = settings->GetWhite()};
+    sf::Vertex vertexFrom{.position = NormalToCenterWindowSize(vecFrom, settings->GetOffset(), settings->GetSize()),
+                          .color = WHITE_COLOR};
+    sf::Vertex vertexTo{.position = NormalToCenterWindowSize(vecTo, settings->GetOffset(), settings->GetSize()),
+                        .color = WHITE_COLOR};
 
-    linesVArray.append(v1);
-    linesVArray.append(v2);
+    linesVArray.append(vertexFrom);
+    linesVArray.append(vertexTo);
 }
 
 void Line::Render(bool showAnswer) const

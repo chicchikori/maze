@@ -19,8 +19,8 @@ public:
 
     void UpdateLine(const std::unordered_set<std::shared_ptr<Uf::Edge>>& trees);
     void Render(bool showAnswer) const;
-    [[nodiscard]] std::vector<sf::Vector2f> SolveMaze(const std::unordered_set<std::shared_ptr<Uf::Edge>>& edges,
-                                                      sf::Vector2i start, sf::Vector2i goal) const;
+    static std::vector<sf::Vector2f> SolveMaze(const std::unordered_set<std::shared_ptr<Uf::Edge>>& edges,
+                                               sf::Vector2i start, sf::Vector2i goal);
 
     [[nodiscard]] std::vector<sf::Vector2f> GetAnswerRoute() const
     {
@@ -34,6 +34,6 @@ private:
     sf::VertexArray answerLine = sf::VertexArray(sf::PrimitiveType::Lines);
     std::vector<sf::Vector2f> answerRoute;
     void AddAnswerLine(int index);
-    void AddMazeLine(sf::Vector2f from, sf::Vector2f to);
+    void AddMazeLine(sf::Vector2f vecFrom, sf::Vector2f vecTo);
     sf::Vector2f AddLine(sf::Vector2f vec2);
 };

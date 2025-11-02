@@ -85,11 +85,11 @@ void Window::Fullscreen()
     SetWindowLong(hwnd, GWL_STYLE, style);
 
     const auto hmon = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
-    MONITORINFO mi = {sizeof(mi)};
-    if (GetMonitorInfo(hmon, &mi))
+    MONITORINFO monitorInfo = {sizeof(monitorInfo)};
+    if (GetMonitorInfo(hmon, &monitorInfo))
     {
-        SetWindowPos(hwnd, HWND_TOP, mi.rcMonitor.left, mi.rcMonitor.top, mi.rcMonitor.right - mi.rcMonitor.left,
-                     mi.rcMonitor.bottom - mi.rcMonitor.top, SWP_FRAMECHANGED | SWP_NOOWNERZORDER);
+        SetWindowPos(hwnd, HWND_TOP, monitorInfo.rcMonitor.left, monitorInfo.rcMonitor.top, monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left,
+                     monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top, SWP_FRAMECHANGED | SWP_NOOWNERZORDER);
     }
     isFullSizeWindow = true;
 }

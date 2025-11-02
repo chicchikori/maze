@@ -6,46 +6,39 @@
 #include <SFML/Graphics/Vertex.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <algorithm>
+#include <cstddef>
 #include <memory>
 
 
 rc::Road::Road(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window) :
-    settings(setting), line(setting, window)
+    settings(setting), window(window), line(setting, window)
 {
-    this->window = window;
     Init();
 }
 
 void rc::Road::Init()
 {
-    sf::Vector2i goalPos = sf::Vector2i(settings->GetMazeSize().x, settings->GetMazeSize().y - 1);
+    sf::Vector2i goalPos = sf::Vector2i((int)settings->GetMazeSize().x, (int)settings->GetMazeSize().y - 1);
     settings->Center();
     trees.clear();
     boxes.clear();
     // init box
-    boxes.reserve((settings->GetMazeSize().x + 1) * (settings->GetMazeSize().y + 1));
-    for (int x = 0; x < settings->GetMazeSize().x + 1; x++)
+    boxes.reserve((size_t)(settings->GetMazeSize().x + 1) * (settings->GetMazeSize().y + 1));
+    for (int x = 0; x < settings->GetMazeSize().x + 1; x++) // NOLINT
     {
-        for (int y = 0; y < settings->GetMazeSize().y + 1; y++)
+        for (int y = 0; y < settings->GetMazeSize().y + 1; y++) // NOLINT
         {
-            auto p = std::make_shared<Point>(sf::Vector2i(x, y));
-            if (p->position.x == settings->GetMazeSize().x)
+            auto point = std::make_shared<Point>(sf::Vector2i(x, y));
+            if (point->GetPosition().x == settings->GetMazeSize().x)
             {
-                p->isTop = true;
+                point->SetIsTop();
             }
-            if (p->position.y == settings->GetMazeSize().y)
+            if (point->GetPosition().y == settings->GetMazeSize().y || point->GetPosition() == sf::Vector2i(0, 0) ||
+                point->GetPosition() == goalPos)
             {
-                p->isLeft = true;
+                point->SetIsLeft();
             }
-            if (p->position == sf::Vector2i(0, 0))
-            {
-                p->isLeft = true;
-            }
-            else if (p->position == goalPos)
-            {
-                p->isLeft = true;
-            }
-            boxes.push_back(p);
+            boxes.push_back(point);
         }
     }
 }
@@ -54,11 +47,11 @@ void rc::Road::AddEdge(const std::shared_ptr<Uf::Edge>& edge)
 {
     if (edge->isHorizen)
     {
-        boxes[edge->to->posision.x * (settings->GetMazeSize().y + 1) + edge->to->posision.y]->isLeft = true;
+        boxes[edge->to->posision.x * (settings->GetMazeSize().y + 1) + edge->to->posision.y]->SetIsLeft();
     }
     else
     {
-        boxes[edge->to->posision.x * (settings->GetMazeSize().y + 1) + edge->to->posision.y]->isTop = true;
+        boxes[edge->to->posision.x * (settings->GetMazeSize().y + 1) + edge->to->posision.y]->SetIsTop();
     }
     trees.insert(edge);
 }
@@ -71,11 +64,11 @@ void rc::Road::UpdateLines()
 
     for (const auto& box : boxes)
     {
-        if (!(box->isTop))
+        if (!(box->IsTop()))
         {
             AddRoad({1, 0}, box);
         }
-        if (!(box->isLeft))
+        if (!(box->IsLeft()))
         {
             AddRoad({0, 1}, box);
         }
@@ -86,31 +79,31 @@ void rc::Road::UpdateLines()
 
 void rc::Road::AddRoad(sf::Vector2f pos1, const std::shared_ptr<rc::Point>& box)
 {
-    sf::Vertex position1{.position = NormalToWindowSize(static_cast<sf::Vector2f>(box->position), settings->GetOffset(),
-                                                        settings->GetSize()),
-                         .color = settings->GetWhite()};
-    sf::Vertex position2{.position = NormalToWindowSize(static_cast<sf::Vector2f>(box->position) + pos1,
+    sf::Vertex position1{.position = NormalToWindowSize(static_cast<sf::Vector2f>(box->GetPosition()),
                                                         settings->GetOffset(), settings->GetSize()),
-                         .color = settings->GetWhite()};
+                         .color = WHITE_COLOR};
+    sf::Vertex position2{.position = NormalToWindowSize(static_cast<sf::Vector2f>(box->GetPosition()) + pos1,
+                                                        settings->GetOffset(), settings->GetSize()),
+                         .color = WHITE_COLOR};
     roadVArray.append(position1);
     roadVArray.append(position2);
 }
 
 void rc::Road::AddArrow()
 {
-    float clampedSize = std::clamp(settings->GetSize(), 0.f, 60.f);
-    sGPos[0] = settings->GetOffset() + sf::Vector2f(0, 0.5f) * settings->GetSize();
+    float clampedSize = std::clamp(settings->GetSize(), 0.F, 60.F);
+    sGPos[0] = settings->GetOffset() + sf::Vector2f(0, 0.5F) * settings->GetSize();
     sGPos[1] = settings->GetOffset() +
-        ((sf::Vector2f)(settings->GetMazeSize()) + sf::Vector2f(0, -0.5f)) * settings->GetSize();
+        ((sf::Vector2f)(settings->GetMazeSize()) + sf::Vector2f(0, -0.5F)) * settings->GetSize();
     for (int j = 0; j < 2; j++)
     {
         sf::Vector2i pos((j - 1) * 100 + 10, 10);
         for (int i = 0; i < 7; i++)
         {
-            pos += arrowPos[i];
-            arrows[j].setPoint(i, (sf::Vector2f)pos / 100.f * clampedSize);
-            arrows[j].setPosition(sGPos[j]);
-            arrows[j].setFillColor(sGColor[j]);
+            pos += arrowPos.at(i);
+            arrows.at(j).setPoint(i, (sf::Vector2f)pos / 100.F * clampedSize);
+            arrows.at(j).setPosition(sGPos.at(j));
+            arrows.at(j).setFillColor(sGColor.at(j));
         }
     }
 }

@@ -51,15 +51,15 @@ sf::Vector2f RoundedRectangle::GetSize() const
 
 std::size_t RoundedRectangle::getPointCount() const
 {
-    return (resolution + 1) * 4;
+    return (static_cast<std::size_t>(resolution + 1)) * 4;
 }
 
 sf::Vector2f RoundedRectangle::getPoint(std::size_t index) const
 {
-    int pointCount = getPointCount();
+    size_t pointCount = getPointCount();
     assert(index < pointCount && "Index is out of bounds");
     const unsigned int corner = /* std::floor */ (index / /* (pointCount / 4.f) */ (resolution + 1));
-    const sf::Angle step = (sRound != 0) ? sf::degrees(90) / resolution : sf::degrees(90);
+    const sf::Angle step = (sRound != 0) ? sf::degrees(90) / (float)resolution : sf::degrees(90);
     const unsigned int localIndex = index % (resolution + 1);
 
     switch (corner)
@@ -87,13 +87,14 @@ sf::Vector2f RoundedRectangle::getPoint(std::size_t index) const
 
 sf::Vector2f RoundedRectangle::getGeometricCenter() const
 {
-    return mSize / 2.f;
+    return mSize / 2.F;
 }
 
-sf::Vector2f RoundedRectangle::AddEdge(sf::Vector2f center, sf::Angle startAngle, sf::Angle step, int i) const
+sf::Vector2f RoundedRectangle::AddEdge(sf::Vector2f center, sf::Angle startAngle, sf::Angle step,
+                                       unsigned int index) const
 {
-    return {center.x + std::cos((startAngle + step * i).asRadians()) * sRound,
-            center.y + std::sin((startAngle + step * i).asRadians()) * sRound};
+    return {center.x + std::cos((startAngle + step * (float)index).asRadians()) * sRound,
+            center.y + std::sin((startAngle + step * (float)index).asRadians()) * sRound};
 }
 
 void RoundedRectangle::CalcSRound()

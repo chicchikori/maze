@@ -12,7 +12,6 @@
 #include <memory>
 
 
-
 PopUp::PopUp() : progressPercentText(Fonts::font, "", 16)
 {
 }
@@ -22,27 +21,27 @@ PopUp::PopUp(const std::shared_ptr<Window>& window, const std::shared_ptr<Settin
 {
     background.setSize(popSize);
     background.setFillColor(sf::Color(10, 10, 10));
-    background.setOrigin(popSize / 2.f);
+    background.setOrigin(popSize / 2.F);
 
     progressBar.setSize(sf::Vector2f(0, progressbarWidth));
     progressBar.setFillColor(sf::Color::Red);
-    progressBar.setOrigin(sf::Vector2f(0, progressbarWidth / 2.f));
-    progressBarBackground.setSize(sf::Vector2f(popSize.x - 20.f, progressbarWidth));
-    progressBarBackground.setOrigin(sf::Vector2f((popSize.x - 20.f) / 2.f, progressbarWidth / 2.f));
+    progressBar.setOrigin(sf::Vector2f(0, progressbarWidth / 2.F));
+    progressBarBackground.setSize(sf::Vector2f(popSize.x - 20.F, progressbarWidth));
+    progressBarBackground.setOrigin(sf::Vector2f((popSize.x - 20.F) / 2.F, progressbarWidth / 2.F));
 }
 
 void PopUp::PopProgress()
 {
-    sf::Vector2f center = static_cast<sf::Vector2f>(setting->GetWindowSize()) / 2.f;
+    sf::Vector2f center = static_cast<sf::Vector2f>(setting->GetWindowSize()) / 2.F;
     float progressValue = (static_cast<float>(Uf::UnionFind::progress) / static_cast<float>(size));
 
     progressBar.setSize(sf::Vector2f(progressValue * (popSize.x - margin * 2), progressbarWidth));
     background.setPosition(center);
     progressBarBackground.setPosition(center);
-    progressBar.setPosition(center - sf::Vector2f(popSize.x / 2.f - margin, 0));
-    progressPercentText.setString(std::format("{}%", static_cast<int>(progressValue * 100.f)));
-    progressPercentText.setOrigin(progressPercentText.getLocalBounds().size / 2.f);
-    progressPercentText.setPosition(center - sf::Vector2f(0, popSize.y / 2.f));
+    progressBar.setPosition(center - sf::Vector2f(popSize.x / 2.F - margin, 0));
+    progressPercentText.setString(std::format("{}%", static_cast<int>(progressValue * 100.F)));
+    progressPercentText.setOrigin(progressPercentText.getLocalBounds().size / 2.F);
+    progressPercentText.setPosition(center - sf::Vector2f(0, popSize.y / 2.F));
 
     window->GetWindow()->draw(background);
     window->GetWindow()->draw(progressBarBackground);

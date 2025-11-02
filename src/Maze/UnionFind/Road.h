@@ -63,15 +63,15 @@ namespace rc
         sf::VertexArray roadVArray = sf::VertexArray(sf::PrimitiveType::Lines);
 
         std::array<sf::ConvexShape, 2> arrows = {sf::ConvexShape(7), sf::ConvexShape(7)};
-        const std::array<sf::Vector2i, 7> arrowPos = {
-            sf::Vector2i(0, 0),     sf::Vector2i(35, 0), sf::Vector2i(0, 20), sf::Vector2i(35, -30),
-            sf::Vector2i(-35, -30), sf::Vector2i(0, 20), sf::Vector2i(-35, 0)};
+        std::array<sf::Vector2i, 7> arrowPos = {sf::Vector2i(0, 0),    sf::Vector2i(35, 0),    sf::Vector2i(0, 20),
+                                                sf::Vector2i(35, -30), sf::Vector2i(-35, -30), sf::Vector2i(0, 20),
+                                                sf::Vector2i(-35, 0)};
 
         std::array<sf::Vector2f, 2> sGPos;
 
-        const std::array<sf::Color, 2> sGColor = {
-            settings->GetGreen(),
-            settings->GetRed(),
+        std::array<sf::Color, 2> sGColor = {
+            GREEN_COLOR,
+            RED_COLOR,
         };
     };
 } // namespace rc

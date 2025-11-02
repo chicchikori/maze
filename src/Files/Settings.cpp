@@ -28,9 +28,19 @@ Settings::Settings(const std::shared_ptr<Window>& window) :
 
 void Settings::Load()
 {
-    const char* res = tinyfd_openFileDialog("select maze file", reinterpret_cast<const char*>(path.c_str()), 1,
-                                            filePattern.cbegin(), "maze file", 0);
-    if (!res)
+    std::cout << path << "\n";
+    std::string utf8Path;
+    if (path.empty())
+    {
+        utf8Path = "";
+    }
+    else
+    {
+        utf8Path = std::string(path.u8string().begin(), path.u8string().end());
+    }
+    const char* res =
+        tinyfd_openFileDialog("select maze file", utf8Path.c_str(), 1, filePattern.cbegin(), "maze file", 0);
+    if (res == nullptr)
     {
         return;
     }
@@ -56,16 +66,15 @@ void Settings::Center()
     if (windowMazeUSize.x > windowMazeUSize.y)
     {
         size = windowMazeUSize.y;
-        offset = sf::Vector2f(
-            (static_cast<float>(windowSize.x) - (static_cast<float>(windowMazeSize.x) - 2) * size) / 2.f, size+MENU_BAR_HEIGHT);
+        offset =
+            sf::Vector2f((static_cast<float>(windowSize.x) - (static_cast<float>(windowMazeSize.x) - 2) * size) / 2.F,
+                         size + MENU_BAR_HEIGHT);
     }
     else
     {
         size = windowMazeUSize.x;
         offset = sf::Vector2f(
-            size,
-            (static_cast<float>(windowSize.y) - (static_cast<float>(windowMazeSize.y) - 2) * size) /
-                2.f);
+            size, (static_cast<float>(windowSize.y) - (static_cast<float>(windowMazeSize.y) - 2) * size) / 2.F);
     }
 }
 
@@ -73,8 +82,8 @@ void Settings::UpdateSeed()
 {
     if (updateSeed)
     {
-        std::random_device rd;
-        std::mt19937 gen(rd());
+        std::random_device randD;
+        std::mt19937 gen(randD());
         std::uniform_int_distribution dis(0, INT_MAX);
         seeds = dis(gen);
     }
@@ -101,7 +110,9 @@ void Settings::ImportMaze()
     }
 
     SetFromJson(res);
-    auto title = sf::String(reinterpret_cast<const char*>(path.u8string().c_str()));
+    std::u8string u8str = path.u8string();
+    std::string str(u8str.begin(), u8str.end());
+    auto title = sf::String(str.c_str());
     title += "  (seed:" + std::to_string(seeds) + ")";
     window->SetTitle(title);
 }
@@ -119,10 +130,10 @@ void Settings::SetFromJson(const std::string& content)
     }
     seeds = settingJson.value("seed", 0);
     updateSeed = settingJson.value("updateSeed", true);
-    mazeSize = {settingJson.value("mazeSize", nlohmann::basic_json<>()).value("x", 100u),
-                settingJson.value("mazeSize", nlohmann::basic_json<>()).value("y", 100u)};
-    windowSize = {settingJson.value("windowSize", nlohmann::basic_json<>()).value("width", 500u),
-                  settingJson.value("windowSize", nlohmann::basic_json<>()).value("height", 400u)};
+    mazeSize = {settingJson.value("mazeSize", nlohmann::basic_json<>()).value("x", 100U),
+                settingJson.value("mazeSize", nlohmann::basic_json<>()).value("y", 100U)};
+    windowSize = {settingJson.value("windowSize", nlohmann::basic_json<>()).value("width", 500U),
+                  settingJson.value("windowSize", nlohmann::basic_json<>()).value("height", 400U)};
     if (settingJson.value("fullscreen", false))
     {
         window->Fullscreen();

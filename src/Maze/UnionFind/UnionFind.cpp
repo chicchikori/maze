@@ -6,6 +6,7 @@
 #include <SFML/System/Vector2.hpp>
 #include <algorithm>
 #include <climits>
+#include <cstddef>
 #include <iostream>
 #include <memory>
 #include <random>
@@ -16,10 +17,6 @@ std::atomic<bool> Uf::UnionFind::running(false);
 std::atomic<bool> Uf::UnionFind::isRunThread(false);
 std::atomic<int> Uf::UnionFind::progress(0);
 
-Uf::Edge::Edge(const std::shared_ptr<Point>& from, const std::shared_ptr<Point>& to, const int weight,
-               const bool isHorizon) : from(from), to(to), weight(weight), isHorizen(isHorizon)
-{
-}
 
 Uf::UnionFind::UnionFind(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window) :
     settings(setting), window(window), pp(window, setting)
@@ -42,8 +39,8 @@ void Uf::UnionFind::Create(Cont::Control& controller)
                 running = true;
                 isRunThread = true;
 
-                pp.SetSize((settings->GetMazeSize().x + 1) * settings->GetMazeSize().y +
-                           (settings->GetMazeSize().y + 1) * settings->GetMazeSize().x);
+                pp.SetSize((int)((settings->GetMazeSize().x + 1) * settings->GetMazeSize().y +
+                                 (settings->GetMazeSize().y + 1) * settings->GetMazeSize().x));
                 Find(controller);
                 running = false;
                 isRunThread = false;
@@ -62,30 +59,33 @@ void Uf::UnionFind::Init()
     std::uniform_int_distribution<std::mt19937::result_type> dist(0, INT_MAX);
 
     // init points
-    ID id = 0;
+    ID ids = 0;
     points.clear();
-    points.reserve(width * height);
-    for (int y = 0; y < height; y++)
+    points.reserve((static_cast<size_t>(width * height)));
+    for (int y = 0; y < height; y++) // NOLINT
     {
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < width; x++) // NOLINT
         {
-            auto point = std::make_shared<Point>(id, sf::Vector2i(x, y));
+            auto point = std::make_shared<Point>(ids, sf::Vector2i(x, y));
             point->root = point;
             points.emplace_back(point);
-            id++;
+            ids++;
         }
     }
     edges.clear();
     edges.reserve((width - 1) * height + width * (height - 1));
-    for (int y = 0; y < height; y++)
+    for (int y = 0; y < height; y++) // NOLINT
     {
-        for (int x = 0; x < width - 1; x++)
+        for (int x = 0; x < width - 1; x++) // NOLINT
         {
             edges.emplace_back(
                 std::make_shared<Edge>(points.at(y * width + x), points.at(y * width + x + 1), dist(rng), true));
         }
-        if (y == height - 1) continue;
-        for (int x = 0; x < width; x++)
+        if (y == height - 1)
+        {
+            continue;
+        }
+        for (int x = 0; x < width; x++) // NOLINT
         {
             edges.emplace_back(
                 std::make_shared<Edge>(points.at(y * width + x), points.at((y + 1) * width + x), dist(rng), false));
@@ -132,20 +132,29 @@ bool Uf::UnionFind::Find(Cont::Control& controller)
     return true;
 }
 
-bool Uf::UnionFind::Unite(const std::shared_ptr<Point>& t1, const std::shared_ptr<Point>& t2)
+bool Uf::UnionFind::Unite(const std::shared_ptr<Point>& tree1, const std::shared_ptr<Point>& tree2)
 {
-    auto p1 = Root(t1);
-    auto p2 = Root(t2);
-    if (p1 == p2) return false;
-    if (p1->size < p2->size) std::swap(p1, p2);
-    p1->size += p2->size;
-    p2->root = p1;
+    auto point1 = Root(tree1);
+    auto point2 = Root(tree2);
+    if (point1 == point2)
+    {
+        return false;
+    }
+    if (point1->size < point2->size)
+    {
+        std::swap(point1, point2);
+    }
+    point1->size += point2->size;
+    point2->root = point1;
     return true;
 }
 
-std::shared_ptr<Uf::Point> Uf::UnionFind::Root(const std::shared_ptr<Uf::Point>& point)
+std::shared_ptr<Uf::Point> Uf::UnionFind::Root(const std::shared_ptr<Uf::Point>& point) // NOLINT
 {
-    if (point->root == point) return point;
+    if (point->root == point)
+    {
+        return point;
+    }
     point->root = Root(point->root);
     return point->root;
 }

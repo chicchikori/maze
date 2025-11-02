@@ -23,6 +23,11 @@
 
 #define MAIN_FONT_SIZE 14
 #define BACKGROUND_COLOR sf::Color(30, 30, 30)
+#define GREEN_COLOR sf::Color(130, 178, 108)
+#define BLACK_COLOR sf::Color(54, 57, 59)
+#define RED_COLOR sf::Color(242, 84, 84)
+#define WHITE_COLOR sf::Color(243, 243, 244)
+#define SETTING_FILE_PATH "./Assets/Setting.json"
 
 #define IMAGE_ROAD_SIZE 15
 #define IMAGE_WALL_SIZE 1
