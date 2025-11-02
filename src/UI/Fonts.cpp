@@ -2,4 +2,4 @@
 #include <SFML/Graphics/Font.hpp>
 
 #include "../Util/Variables.h"
-sf::Font Fonts::font{INTER_FONT_PATH};
+sf::Font Fonts::font{ARIAL_FONT_PATH};

@@ -2,10 +2,15 @@
 #include "MenuItem.h"
 
 #include <SFML/Window/Event.hpp>
+
+#include <iostream>
 #include <string>
 
+#include "../Game.h"
 #include "../Util/Variables.h"
 #include "Button.h"
+#include "Dropdown.h"
+
 #define MENU_BAR_BUTTON_TOP_MARGIN ((MENU_BAR_HEIGHT - MENU_BAR_BUTTON_HEIGHT) >> 1)
 #define MENU_BAR_BUTTON_LEFT_MARGIN ((MENU_BAR_WIDTH - MENU_BAR_BUTTON_WIDTH) >> 1)
 
@@ -47,6 +52,11 @@ namespace Menu
         {
             isDropDownActive = true;
         }
+        if (isDropDownActive)
+        {
+            DropDown::Update();
+            activeItemNum = DropDown::GetActive();
+        }
     }
 
     void MenuItem::Render()
@@ -65,24 +75,35 @@ namespace Menu
     {
         menuBarBackground.setSize({(float)setting->GetWindowSize().x, MENU_BAR_HEIGHT});
         menuBarBackground.setFillColor(MENU_BAR_BACKGROUND_COLOR);
-        menu[0] = MenuItem(window, settings, "Files", {"Open", "Save", "Save As", "Quit"}, 0);
-
-        menu[1] = MenuItem(window, settings, "Test", {"Opent", "Savet", "Save Ast", "Quitt"}, 1);
+        menuFile = MenuItem(window, settings, "Files", {"Open", "Save", "Save As", "Save Image", "Quit"}, 0);
     }
 
     void Menu::Render()
     {
         window->GetWindow()->draw(menuBarBackground);
-        for (auto& menuItem : menu)
-        {
-            menuItem.Render();
-        }
+        menuFile.Render();
     }
     void Menu::Update()
     {
-        for (auto& menuItem : menu)
+        menuFile.Update();
+        switch (menuFile.ActiveItem())
         {
-            menuItem.Update();
+        case 0:
+            setting->Load();
+            break;
+        case 1:
+            setting->Save();
+            break;
+        case 2:
+            setting->SaveAs();
+            break;
+        case 3:
+            std::cerr << "Save as Image button but is not still configured\n";
+            break;
+        case 4:
+            Game::isOpen = false;
+        default:
+            break;
         }
     }
     void Menu::Event(sf::Event& event)
@@ -91,9 +112,6 @@ namespace Menu
         {
             menuBarBackground.setSize({(float)setting->GetWindowSize().x, MENU_BAR_HEIGHT});
         }
-        for (auto& menuItem : menu)
-        {
-            menuItem.Event(event);
-        }
+        menuFile.Event(event);
     }
 } // namespace Menu

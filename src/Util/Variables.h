@@ -32,7 +32,8 @@
 #define IMAGE_ROAD_SIZE 15
 #define IMAGE_WALL_SIZE 1
 
-#define INTER_FONT_PATH "./Assets/Fonts/Inter.ttf"
+#define INTER_FONT_PATH "C:/Windows/Fonts/Inter.ttf"
+#define ARIAL_FONT_PATH "C:/Windows/Fonts/Arial.ttf"
 #define popSize sf::Vector2f(400, 100)
 #define progressbarWidth 10
 #define margin 10.f

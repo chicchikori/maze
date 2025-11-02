@@ -1,6 +1,7 @@
 #include "Dropdown.h"
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <iostream>
 #include <utility>
 #include "../Util/Variables.h"
 #include "Button.h"
@@ -62,8 +63,11 @@ void DropDown::Update()
 {
     for (auto& btn : items)
     {
-        btn.second.IsActive();
-        activeId = btn.first;
+        if (btn.second.IsActive())
+        {
+            std::cout << btn.second.GetLabel() << "\n";
+            activeId = btn.first;
+        }
     }
 }
 

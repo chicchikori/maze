@@ -3,7 +3,7 @@
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
-#include <array>
+
 #include <memory>
 #include <string>
 
@@ -24,6 +24,10 @@ namespace Menu
 
         void Render();
         void Update();
+        int ActiveItem() const
+        {
+            return activeItemNum;
+        }
         void Event(sf::Event& event);
 
     private:
@@ -35,6 +39,7 @@ namespace Menu
 
         std::string label;
         Button::RoundedButton mainButton;
+        int activeItemNum{-1};
         bool isDropDownActive{false};
     };
 
@@ -51,7 +56,7 @@ namespace Menu
     private:
         std::shared_ptr<Window> window;
         std::shared_ptr<Settings> setting;
-        std::array<MenuItem, 2> menu;
+        MenuItem menuFile;
         sf::RectangleShape menuBarBackground;
     };
 } // namespace Menu

@@ -50,6 +50,7 @@ void Settings::Load()
 
 void Settings::Save()
 {
+    
 }
 
 void Settings::SaveAs()

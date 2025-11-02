@@ -13,8 +13,9 @@
 
 
 SceneState Game::scene{SceneState::MazeGame};
+bool Game::isOpen{true};
 
-Game::Game() : isOpen(true)
+Game::Game()
 {
     window = std::make_shared<Window>();
     settings = std::make_shared<Settings>(window);

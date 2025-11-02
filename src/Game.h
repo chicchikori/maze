@@ -7,8 +7,10 @@
 
 #include <memory>
 
-class Game {
+class Game
+{
 public:
+    static bool isOpen;
     Game();
 
     void Run();
@@ -24,6 +26,4 @@ private:
     void Update();
     void Render();
     void Init();
-
-    bool isOpen;
 };
