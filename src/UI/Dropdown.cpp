@@ -1,7 +1,6 @@
 #include "Dropdown.h"
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <iostream>
 #include <utility>
 #include "../Util/Variables.h"
 #include "Button.h"
@@ -13,15 +12,16 @@ DropDown::DropDown(const std::shared_ptr<Window>& window, const std::vector<std:
     int index = 0;
     for (const auto& str : item)
     {
-        items.try_emplace(
-            index,
-            Button::RoundedButton(window, DROPDOWN_ROUND_RES, {DROPDOWN_CONTENT_WIDTH, DROPDOWN_CONTENT_HEIGHT},
-                                  DROPDOWN_ROUND, str, {.rl = Button::AlignRL::LEFT}));
-        items[index].SetPosition(
+        items.try_emplace(index,
+                          std::make_pair(Button::RoundedButton(window, DROPDOWN_ROUND_RES,
+                                                               {DROPDOWN_CONTENT_WIDTH, DROPDOWN_CONTENT_HEIGHT},
+                                                               DROPDOWN_ROUND, str, {.rl = Button::AlignRL::LEFT}),
+                                         false));
+        items[index].first.SetPosition(
             position +
             sf::Vector2f(DROPDOWN_MARGIN,
                          DROPDOWN_MARGIN + ((DROPDOWN_CONTENT_OFFSET + DROPDOWN_CONTENT_HEIGHT) * index)));
-        items[index].SetColor(DROPDOWN_NORMAL_COLOR, DROPDOWN_HOVER_COLOR, DROPDOWN_ACTIVE_COLOR);
+        items[index].first.SetColor(DROPDOWN_NORMAL_COLOR, DROPDOWN_HOVER_COLOR, DROPDOWN_ACTIVE_COLOR);
         index++;
     }
     background =
@@ -39,7 +39,7 @@ void DropDown::Render()
     window->GetWindow()->draw(background);
     for (auto& item : items)
     {
-        item.second.Render();
+        item.second.first.Render();
     }
 }
 
@@ -47,7 +47,7 @@ void DropDown::Event(sf::Event& event, bool& isDDActive)
 {
     for (auto& btn : items)
     {
-        btn.second.Event(event);
+        btn.second.first.Event(event);
     }
 
     if (const auto mouse = event.getIf<sf::Event::MouseButtonPressed>())
@@ -61,17 +61,18 @@ void DropDown::Event(sf::Event& event, bool& isDDActive)
 
 void DropDown::Update()
 {
+    activeId = -1;
     for (auto& btn : items)
     {
-        if (btn.second.IsActive())
+        if (btn.second.first.IsActive() && !btn.second.second)
         {
-            std::cout << btn.second.GetLabel() << "\n";
             activeId = btn.first;
         }
+        btn.second.second = btn.second.first.IsActive();
     }
 }
 
-int DropDown::GetActive()
+int DropDown::GetActive() const
 {
-    return std::exchange(activeId, -1);
+    return activeId;
 }

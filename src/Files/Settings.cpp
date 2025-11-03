@@ -52,10 +52,12 @@ void Settings::Load()
 
 void Settings::Save()
 {
+    std::cout << "save\n";
 }
 
 void Settings::SaveAs()
 {
+    std::cout << "save as\n";
 }
 
 void Settings::Center()
