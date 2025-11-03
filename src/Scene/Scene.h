@@ -18,18 +18,15 @@ class Scene
 {
 public:
     Scene() = default;
+    Scene(const std::shared_ptr<Window>& window, const std::shared_ptr<Settings>& setting)
+    {
+        Init(window, setting);
+    };
     void Init(const std::shared_ptr<Window>& window, const std::shared_ptr<Settings>& setting);
     virtual ~Scene();
     virtual void Update();
     virtual void Event(sf::Event& event);
     virtual void Render();
-
-protected:
-    [[nodiscard]] std::shared_ptr<Settings> GetSetting() const
-    {
-        return settings;
-    };
-
 
 private:
     std::shared_ptr<Settings> settings;

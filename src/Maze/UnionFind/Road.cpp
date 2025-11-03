@@ -1,17 +1,22 @@
 #include "Road.h"
 
-#include "Line.h"
-
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Vertex.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <algorithm>
 #include <cstddef>
+#include "../Util/uf.h"
+#include "Line.h"
+#include "UnionFind.h"
+
+
+#include <future>
+#include <iostream>
 #include <memory>
 
 
 rc::Road::Road(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window) :
-    settings(setting), window(window), line(setting, window)
+    Uf::UnionFind(setting, window), settings(setting), window(window), line(setting, window)
 {
     Init();
 }
@@ -38,22 +43,9 @@ void rc::Road::Init()
             {
                 point->SetIsLeft();
             }
-            boxes.push_back(point);
+            boxes.emplace(point->GetPosition(), point);
         }
     }
-}
-
-void rc::Road::AddEdge(const std::shared_ptr<Uf::Edge>& edge)
-{
-    if (edge->isHorizen)
-    {
-        boxes[edge->to->posision.x * (settings->GetMazeSize().y + 1) + edge->to->posision.y]->SetIsLeft();
-    }
-    else
-    {
-        boxes[edge->to->posision.x * (settings->GetMazeSize().y + 1) + edge->to->posision.y]->SetIsTop();
-    }
-    trees.insert(edge);
 }
 
 void rc::Road::UpdateLines()
@@ -64,17 +56,29 @@ void rc::Road::UpdateLines()
 
     for (const auto& box : boxes)
     {
-        if (!(box->IsTop()))
+        if (!(box.second->IsTop()))
         {
-            AddRoad({1, 0}, box);
+            AddRoad({1, 0}, box.second);
         }
-        if (!(box->IsLeft()))
+        if (!(box.second->IsLeft()))
         {
-            AddRoad({0, 1}, box);
+            AddRoad({0, 1}, box.second);
         }
     }
 
     AddArrow();
+}
+
+void rc::Road::CreateUf()
+{
+    if (!Uf::UnionFind::isRunThread)
+    {
+        std::cout << "start\n";
+        Init();
+        Uf::UnionFind::Create(promiseTree);
+        wasCreated = true;
+        std::cout << "end\n";
+    }
 }
 
 void rc::Road::AddRoad(sf::Vector2f pos1, const std::shared_ptr<rc::Point>& box)
@@ -107,10 +111,40 @@ void rc::Road::AddArrow()
         }
     }
 }
+void rc::Road::Update()
+{
+    if (!Uf::UnionFind::isRunThread && wasCreated)
+    {
+        
+        trees = promiseTree.get_future().get();
+        promiseTree = std::promise<std::unordered_set<std::shared_ptr<Uf::Tree>>>();
+        wasCreated = false;
+        std::cout << "got\n";
+        for (auto& tree : trees)
+        {
+            auto& point = boxes.at(tree->to->posision);
+            if (tree->isHorizen)
+            {
+                point->SetIsLeft();
+            }
+            else
+            {
+                point->SetIsTop();
+            }
+        }
+        UpdateLines();
+        std::cout << "modified\n";
+    }
+}
 
 void rc::Road::Render()
 {
     using enum rc::RENDERMODE;
+    if (Uf::UnionFind::isRunThread)
+    {
+        Uf::UnionFind::ProcessBarRender();
+        return;
+    }
     if (mode == LINE || mode == BOTH)
     {
         line.Render(false);
@@ -138,4 +172,9 @@ void rc::Road::Recenter(Cont::Control& controlers)
 void rc::Road::SetMode(const rc::RENDERMODE modes)
 {
     mode = modes;
+}
+
+void rc::Road::Exit()
+{
+    Uf::UnionFind::Exit();
 }

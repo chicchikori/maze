@@ -5,28 +5,29 @@
 #include "../Util/rc.h"
 #include "../Util/uf.h"
 #include "Line.h"
+#include "UnionFind.h"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <array>
 #include <memory>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 namespace rc
 {
-    class Road
+    class Road : public Uf::UnionFind
     {
     public:
+        Road() = default;
         explicit Road(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window);
 
         void RenderAnswer() const;
 
         void SetMode(RENDERMODE modes);
 
-        void AddEdge(const std::shared_ptr<Uf::Edge>& edge);
-
-        std::unordered_set<std::shared_ptr<Uf::Edge>> GetTree() const
+        std::unordered_set<std::shared_ptr<Uf::Tree>> GetTree() const
         {
             return trees;
         }
@@ -37,7 +38,11 @@ namespace rc
 
         void Render();
 
-        std::vector<std::shared_ptr<Point>> GetBoxes() const
+        void Update();
+
+        void CreateUf();
+
+        std::unordered_map<sf::Vector2i, std::shared_ptr<Point>, Vec2Hash> GetBoxes() const
         {
             return boxes;
         }
@@ -47,18 +52,22 @@ namespace rc
             return line.GetAnswerRoute();
         }
 
+        void Exit();
+
     private:
         void AddArrow();
         void Init();
         void AddRoad(sf::Vector2f pos1, const std::shared_ptr<rc::Point>& box);
 
 
+        std::promise<std::unordered_set<std::shared_ptr<Uf::Tree>>> promiseTree;
+
         std::shared_ptr<Settings> settings;
         std::shared_ptr<Window> window;
         Line line;
         RENDERMODE mode = RENDERMODE::ROAD;
-        std::unordered_set<std::shared_ptr<Uf::Edge>> trees;
-        std::vector<std::shared_ptr<Point>> boxes;
+        std::unordered_set<std::shared_ptr<Uf::Tree>> trees;
+        std::unordered_map<sf::Vector2i, std::shared_ptr<Point>, Vec2Hash> boxes;
 
         sf::VertexArray roadVArray = sf::VertexArray(sf::PrimitiveType::Lines);
 
@@ -73,5 +82,6 @@ namespace rc
             GREEN_COLOR,
             RED_COLOR,
         };
+        bool wasCreated{false};
     };
 } // namespace rc

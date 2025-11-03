@@ -3,16 +3,24 @@
 
 #include <SFML/Graphics.hpp>
 #include <cassert>
+#include "Scene.h"
+
+
+GameScene::GameScene(const std::shared_ptr<Window>& window, const std::shared_ptr<Settings>& setting) :
+    Scene(window, setting), settings(setting), window(window), road(setting, window)
+{
+}
 
 void GameScene::InitScene(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window)
 {
     this->window = window;
-    Init(window, setting);
+    settings = setting;
+
     timer.Init(setting, window);
-    uf = Uf::UnionFind(setting, window);
+    road = rc::Road(setting, window);
+    // uf = Uf::UnionFind(setting, window);
     printer = PrintMaze(setting);
     controller = Cont::Control(setting, window);
-    settings = setting;
     menu = Menu::Menu(window, setting);
 }
 
@@ -20,30 +28,31 @@ void GameScene::Update()
 {
     timer.Update();
     menu.Update();
+    road.Update();
+    if (!Uf::UnionFind::isRunThread && createNew)
+    {
+        auto tree = road.GetTree();
+        controller.SetTree(tree);
+
+        createNew = false;
+    }
 }
 
 void GameScene::Render()
 {
-    if (Uf::UnionFind::running)
+    road.Render();
+    if (!Uf::UnionFind::running)
     {
-        uf.ProcessBarRender();
-    }
-    else
-    {
-        auto const road = uf.GetRoad();
-        if (road)
+        if (isAnswer)
         {
-            road->Render();
-            if (isAnswer)
-            {
-                road->RenderAnswer();
-            }
-            else
-            {
-                controller.Render();
-            }
-            timer.RenderTimer();
+            road.RenderAnswer();
         }
+        else
+        {
+            controller.Render();
+        }
+        timer.RenderTimer();
+
         menu.Render();
     }
 }
@@ -59,11 +68,8 @@ void GameScene::Event(sf::Event& event)
             settings->Load();
             break;
         case sf::Keyboard::Key::S:
-            if (uf.GetRoad())
-            {
-                printer.AddInfo(uf.GetRoad()->GetBoxes(), uf.GetRoad()->GetAnswer());
-                printer.Save();
-            }
+            printer.AddInfo(road.GetBoxes(), road.GetAnswer());
+            printer.Save();
             break;
         case sf::Keyboard::Key::Space:
             if (!isAnswer)
@@ -72,36 +78,28 @@ void GameScene::Event(sf::Event& event)
             }
             else
             {
-                uf.Create(controller);
+                createNew = true;
+                road.CreateUf();
                 timer.Start();
             }
             isAnswer = !isAnswer;
             break;
 
-        // Control maze
-        case sf::Keyboard::Key::Left:
-            controller.Move(Cont::MoveDir::Left);
-            break;
-        case sf::Keyboard::Key::Right:
-            controller.Move(Cont::MoveDir::Right);
-            break;
-        case sf::Keyboard::Key::Up:
-            controller.Move(Cont::MoveDir::Up);
-            break;
-        case sf::Keyboard::Key::Down:
-            controller.Move(Cont::MoveDir::Down);
-            break;
+            // Control maze
+
         default:;
         }
+        controller.Event(event);
     }
     if (event.is<sf::Event::Resized>())
     {
-        uf.Recenter(controller);
+        // uf.Recenter(controller);
+        road.Recenter(controller);
     }
 }
 
 
 void GameScene::Exit()
 {
-    uf.Exit();
+    road.Exit();
 }

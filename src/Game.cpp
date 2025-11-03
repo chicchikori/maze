@@ -19,6 +19,7 @@ Game::Game()
 {
     window = std::make_shared<Window>();
     settings = std::make_shared<Settings>(window);
+    game.InitScene(settings, window);
 }
 
 void Game::Init()

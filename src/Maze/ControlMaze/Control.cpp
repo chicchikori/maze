@@ -3,13 +3,30 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Vertex.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <SFML/Window/Event.hpp>
+#include <memory>
 #include <utility>
 
-Cont::Control::Control(
-    const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window,
-    const std::unordered_set<std::pair<sf::Vector2i, sf::Vector2i>, Vec2PairHash, Vec2PairEqual>& trees) :
-    settings(setting), window(window), tree(trees)
+Cont::Control::Control(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window,
+                       const std::unordered_set<std::shared_ptr<Uf::Tree>>& trees) : settings(setting), window(window)
 {
+    SetTree(trees);
+}
+
+void Cont::Control::SetTree(const std::unordered_set<std::shared_ptr<Uf::Tree>>& tree)
+{
+    std::unordered_set<std::pair<sf::Vector2i, sf::Vector2i>, Vec2PairHash, Vec2PairEqual> treeSet;
+    for (const auto& treeEdge : tree)
+    {
+        treeSet.insert(std::pair<sf::Vector2i, sf::Vector2i>(treeEdge->from->posision, treeEdge->to->posision));
+    }
+    this->tree = treeSet;
+    Init();
+}
+
+void Cont::Control::Init()
+{
+    isGoal = false;
     currentPos = {0, 0};
     route.clear();
     route.emplace_back(0, 0);
@@ -18,28 +35,34 @@ Cont::Control::Control(
     goalPos = sf::Vector2i((int)settings->GetMazeSize().x - 1, (int)settings->GetMazeSize().y - 1);
 }
 
-void Cont::Control::Move(const Cont::MoveDir direction)
+
+void Cont::Control::Event(sf::Event& event)
+{
+    auto key = (event.getIf<sf::Event::KeyPressed>());
+    switch (key->code)
+    {
+    case sf::Keyboard::Key::Left:
+        Move({-1, 0});
+        break;
+    case sf::Keyboard::Key::Right:
+        Move({1, 0});
+        break;
+    case sf::Keyboard::Key::Up:
+        Move({0, -1});
+        break;
+    case sf::Keyboard::Key::Down:
+        Move({0, 1});
+        break;
+    default:
+        break;
+    }
+}
+
+void Cont::Control::Move(sf::Vector2i delta)
 {
     if (isGoal)
     {
         return;
-    }
-    sf::Vector2i delta;
-    switch (direction)
-    {
-        using enum Cont::MoveDir;
-    case Right:
-        delta = {1, 0};
-        break;
-    case Left:
-        delta = {-1, 0};
-        break;
-    case Down:
-        delta = {0, 1};
-        break;
-    case Up:
-        delta = {0, -1};
-        break;
     }
 
     currentPos += delta;
@@ -62,6 +85,7 @@ void Cont::Control::Move(const Cont::MoveDir direction)
     isGoal = currentPos == goalPos;
     Update();
 }
+
 
 void Cont::Control::Update()
 {

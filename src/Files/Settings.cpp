@@ -12,6 +12,8 @@
 #include <string>
 #include <windows.h>
 
+#define DEFAULT_MAZESIZE (sf::Vector2u(10, 10))
+
 
 std::filesystem::path Settings::SjisToPath(const std::string& sjis)
 {
@@ -22,7 +24,7 @@ std::filesystem::path Settings::SjisToPath(const std::string& sjis)
 }
 
 Settings::Settings(const std::shared_ptr<Window>& window) :
-    window(window), mazeSize(100, 100), seeds(), updateSeed(false), size(0)
+    window(window), mazeSize(DEFAULT_MAZESIZE), seeds(), updateSeed(true), size(0)
 {
 }
 
@@ -50,7 +52,6 @@ void Settings::Load()
 
 void Settings::Save()
 {
-    
 }
 
 void Settings::SaveAs()
@@ -94,7 +95,7 @@ void Settings::SetDefault()
 {
     seeds = 0;
     updateSeed = true;
-    mazeSize = {10, 10};
+    mazeSize = DEFAULT_MAZESIZE;
     windowSize = {500, 400};
     window->Windowed(true, windowSize);
 }
@@ -131,8 +132,8 @@ void Settings::SetFromJson(const std::string& content)
     }
     seeds = settingJson.value("seed", 0);
     updateSeed = settingJson.value("updateSeed", true);
-    mazeSize = {settingJson.value("mazeSize", nlohmann::basic_json<>()).value("x", 100U),
-                settingJson.value("mazeSize", nlohmann::basic_json<>()).value("y", 100U)};
+    mazeSize = {settingJson.value("mazeSize", nlohmann::basic_json<>()).value("x", DEFAULT_MAZESIZE.x),
+                settingJson.value("mazeSize", nlohmann::basic_json<>()).value("y", DEFAULT_MAZESIZE.y)};
     windowSize = {settingJson.value("windowSize", nlohmann::basic_json<>()).value("width", 500U),
                   settingJson.value("windowSize", nlohmann::basic_json<>()).value("height", 400U)};
     if (settingJson.value("fullscreen", false))

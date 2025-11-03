@@ -14,12 +14,13 @@
 class Line
 {
 public:
+    Line() = default;
     explicit Line(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window) :
         settings(setting), window(window) {};
 
-    void UpdateLine(const std::unordered_set<std::shared_ptr<Uf::Edge>>& trees);
+    void UpdateLine(const std::unordered_set<std::shared_ptr<Uf::Tree>>& trees);
     void Render(bool showAnswer) const;
-    static std::vector<sf::Vector2f> SolveMaze(const std::unordered_set<std::shared_ptr<Uf::Edge>>& edges,
+    static std::vector<sf::Vector2f> SolveMaze(const std::unordered_set<std::shared_ptr<Uf::Tree>>& trees,
                                                sf::Vector2i start, sf::Vector2i goal);
 
     [[nodiscard]] std::vector<sf::Vector2f> GetAnswerRoute() const

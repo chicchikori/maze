@@ -1,56 +1,30 @@
 #include "UnionFind.h"
 
-#include "Road.h"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <algorithm>
 #include <climits>
 #include <cstddef>
-#include <iostream>
+#include <future>
 #include <memory>
 #include <random>
 #include <unordered_set>
 #include <utility>
+#include <vector>
+#include "../Util/uf.h"
 
 std::atomic<bool> Uf::UnionFind::running(false);
 std::atomic<bool> Uf::UnionFind::isRunThread(false);
 std::atomic<int> Uf::UnionFind::progress(0);
-
 
 Uf::UnionFind::UnionFind(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window) :
     settings(setting), window(window), pp(window, setting)
 {
 }
 
-void Uf::UnionFind::Create(Cont::Control& controller)
-{
-    settings->UpdateSeed();
-    if (!running)
-    {
-        if (th1.joinable())
-        {
-            th1.join();
-        }
-        Init();
-        th1 = std::jthread(
-            [this, &controller]()
-            {
-                running = true;
-                isRunThread = true;
-
-                pp.SetSize((int)((settings->GetMazeSize().x + 1) * settings->GetMazeSize().y +
-                                 (settings->GetMazeSize().y + 1) * settings->GetMazeSize().x));
-                Find(controller);
-                running = false;
-                isRunThread = false;
-            });
-    }
-}
-
 void Uf::UnionFind::Init()
 {
-    road = std::make_shared<rc::Road>(settings, window);
     const auto width = static_cast<int>(settings->GetMazeSize().x);
     const auto height = static_cast<int>(settings->GetMazeSize().y);
     std::seed_seq seq{settings->GetSeeds()};
@@ -59,17 +33,16 @@ void Uf::UnionFind::Init()
     std::uniform_int_distribution<std::mt19937::result_type> dist(0, INT_MAX);
 
     // init points
-    ID ids = 0;
     points.clear();
     points.reserve((static_cast<size_t>(width * height)));
+    ID ids = 0;
     for (int y = 0; y < height; y++) // NOLINT
     {
         for (int x = 0; x < width; x++) // NOLINT
         {
-            auto point = std::make_shared<Point>(ids, sf::Vector2i(x, y));
+            auto point = std::make_shared<Node>(ids++, sf::Vector2i(x, y));
             point->root = point;
             points.emplace_back(point);
-            ids++;
         }
     }
     edges.clear();
@@ -79,7 +52,7 @@ void Uf::UnionFind::Init()
         for (int x = 0; x < width - 1; x++) // NOLINT
         {
             edges.emplace_back(
-                std::make_shared<Edge>(points.at(y * width + x), points.at(y * width + x + 1), dist(rng), true));
+                std::make_shared<Tree>(points.at(y * width + x), points.at(y * width + x + 1), dist(rng), true));
         }
         if (y == height - 1)
         {
@@ -88,75 +61,92 @@ void Uf::UnionFind::Init()
         for (int x = 0; x < width; x++) // NOLINT
         {
             edges.emplace_back(
-                std::make_shared<Edge>(points.at(y * width + x), points.at((y + 1) * width + x), dist(rng), false));
+                std::make_shared<Tree>(points.at(y * width + x), points.at((y + 1) * width + x), dist(rng), false));
         }
     }
 }
+void Uf::UnionFind::Create(std::promise<std::unordered_set<std::shared_ptr<Uf::Tree>>>& promiseTree)
+{
+    settings->UpdateSeed();
 
-bool Uf::UnionFind::Find(Cont::Control& controller)
+
+    if (!running)
+    {
+        if (th1.joinable())
+        {
+            th1.join();
+        }
+        Init();
+        th1 = std::jthread(
+            [this, &promiseTree]()
+            {
+                running = true;
+                isRunThread = true;
+
+                pp.SetSize((int)((settings->GetMazeSize().x + 1) * settings->GetMazeSize().y +
+                                 (settings->GetMazeSize().y + 1) * settings->GetMazeSize().x));
+                promiseTree.set_value(Find());
+                running = false;
+                isRunThread = false;
+            });
+    }
+}
+
+std::unordered_set<std::shared_ptr<Uf::Tree>> Uf::UnionFind::Create(int seed)
+{
+    settings->SetSeeds(seed);
+    Init();
+    return Find();
+}
+
+std::unordered_set<std::shared_ptr<Uf::Tree>> Uf::UnionFind::Find()
 {
     progress = 0;
-    std::ranges::sort(edges,
-                      [](const std::shared_ptr<Edge>& edge1, const std::shared_ptr<Edge>& edge2)
-                      {
-                          if (edge1->weight == edge2->weight)
-                          {
-                              return edge1->from->id < edge2->from->id;
-                          }
-                          return edge1->weight < edge2->weight;
-                      });
-    std::cout << edges.size() << "\n";
+    std::unordered_set<std::shared_ptr<Uf::Tree>> tree;
+
+    std::ranges::sort(edges, [](const std::shared_ptr<Tree>& edge1, const std::shared_ptr<Tree>& edge2)
+                      { return edge1->weight < edge2->weight; });
     for (const auto& edge : edges)
     {
         if (Unite(edge->from, edge->to))
         {
-            road->AddEdge(edge);
+            tree.emplace(edge);
         }
 
         if (!isRunThread)
         {
-            return false;
+            return {};
         }
         progress += 1;
-        // std::cout << progress << "\n";
     }
-    road->UpdateLines();
-    const auto tree = road->GetTree();
-    std::unordered_set<std::pair<sf::Vector2i, sf::Vector2i>, Vec2PairHash, Vec2PairEqual> treeSet;
-    for (const auto& treeEdge : tree)
-    {
-        treeSet.insert(std::pair<sf::Vector2i, sf::Vector2i>(treeEdge->from->posision, treeEdge->to->posision));
-    }
-    controller = Cont::Control(settings, window, treeSet);
-    isGoal = false;
-    return true;
+    return tree;
 }
 
-bool Uf::UnionFind::Unite(const std::shared_ptr<Point>& tree1, const std::shared_ptr<Point>& tree2)
+bool Uf::UnionFind::Unite(const std::shared_ptr<Node>& node1, const std::shared_ptr<Node>& node2)
 {
-    auto point1 = Root(tree1);
-    auto point2 = Root(tree2);
-    if (point1 == point2)
+    auto root1 = Root(node1);
+    auto root2 = Root(node2);
+    if (root1 == root2)
     {
         return false;
     }
-    if (point1->size < point2->size)
+    if (root1->size < root2->size)
     {
-        std::swap(point1, point2);
+        std::swap(root1, root2);
     }
-    point1->size += point2->size;
-    point2->root = point1;
+    root1->size += root2->size;
+    root2->root = root1;
     return true;
 }
 
-std::shared_ptr<Uf::Point> Uf::UnionFind::Root(const std::shared_ptr<Uf::Point>& point) // NOLINT
+std::shared_ptr<Uf::Node> Uf::UnionFind::Root(const std::shared_ptr<Uf::Node>& node) // NOLINT
 {
-    if (point->root == point)
+    if (node->root == node)
     {
-        return point;
+        return node;
     }
-    point->root = Root(point->root);
-    return point->root;
+    node->root = Root(node->root);
+    return node->root;
 }
 
 void Uf::UnionFind::ProcessBarRender()
@@ -164,13 +154,6 @@ void Uf::UnionFind::ProcessBarRender()
     pp.PopProgress();
 }
 
-void Uf::UnionFind::Recenter(Cont::Control& controller) const
-{
-    if (road)
-    {
-        road->Recenter(controller);
-    }
-}
 
 void Uf::UnionFind::Exit()
 {

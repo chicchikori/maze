@@ -8,16 +8,16 @@
 #include <stack>
 #include <unordered_set>
 
-std::vector<sf::Vector2f> Line::SolveMaze(const std::unordered_set<std::shared_ptr<Uf::Edge>>& edges,
+std::vector<sf::Vector2f> Line::SolveMaze(const std::unordered_set<std::shared_ptr<Uf::Tree>>& trees,
                                           sf::Vector2i start, sf::Vector2i goal)
 {
     using Graph = std::unordered_map<sf::Vector2i, std::vector<sf::Vector2i>, Vec2Hash>;
 
     Graph graph;
-    for (auto& edge : edges)
+    for (auto& tree : trees)
     {
-        graph[edge->from->posision].push_back(edge->to->posision);
-        graph[edge->to->posision].push_back(edge->from->posision);
+        graph[tree->from->posision].push_back(tree->to->posision);
+        graph[tree->to->posision].push_back(tree->from->posision);
     }
 
     std::unordered_map<sf::Vector2i, sf::Vector2i, Vec2Hash> parent;
@@ -66,7 +66,7 @@ std::vector<sf::Vector2f> Line::SolveMaze(const std::unordered_set<std::shared_p
     return path;
 }
 
-void Line::UpdateLine(const std::unordered_set<std::shared_ptr<Uf::Edge>>& trees)
+void Line::UpdateLine(const std::unordered_set<std::shared_ptr<Uf::Tree>>& trees)
 {
     linesVArray.clear();
     for (const auto& tree : trees)

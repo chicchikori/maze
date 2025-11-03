@@ -12,12 +12,13 @@
 #include <iostream>
 #include "../Util/Variables.h"
 
-PrintMaze::PrintMaze(const std::shared_ptr<Settings>& setting, const std::vector<std::shared_ptr<rc::Point>>& boxes,
+PrintMaze::PrintMaze(const std::shared_ptr<Settings>& setting,
+                     const std::unordered_map<sf::Vector2i, std::shared_ptr<rc::Point>, Vec2Hash>& boxes,
                      const std::vector<sf::Vector2f>& answerRoute) : settings(setting), box(boxes), answer(answerRoute)
 {
 }
 
-void PrintMaze::AddInfo(const std::vector<std::shared_ptr<rc::Point>>& boxes,
+void PrintMaze::AddInfo(const std::unordered_map<sf::Vector2i, std::shared_ptr<rc::Point>, Vec2Hash>& boxes,
                         const std::vector<sf::Vector2f>& answerRoute)
 {
     box = boxes;
@@ -30,16 +31,16 @@ void PrintMaze::Create()
         sf::Image((settings->GetMazeSize() + sf::Vector2u(2, 2)) * static_cast<unsigned>(IMAGE_ROAD_SIZE), WHITE_COLOR);
     for (const auto& boxes : box)
     {
-        if (!(boxes->IsTop()))
+        if (!(boxes.second->IsTop()))
         {
-            const sf::Vector2u posFrom((boxes->GetPosition() + sf::Vector2i(1, 1)) * IMAGE_ROAD_SIZE);
-            const sf::Vector2u posTo((boxes->GetPosition() + sf::Vector2i(2, 1)) * IMAGE_ROAD_SIZE);
+            const sf::Vector2u posFrom((boxes.second->GetPosition() + sf::Vector2i(1, 1)) * IMAGE_ROAD_SIZE);
+            const sf::Vector2u posTo((boxes.second->GetPosition() + sf::Vector2i(2, 1)) * IMAGE_ROAD_SIZE);
             AddLine(posFrom, posTo);
         }
-        if (!(boxes->IsLeft()))
+        if (!(boxes.second->IsLeft()))
         {
-            const sf::Vector2u posFrom((boxes->GetPosition() + sf::Vector2i(1, 1)) * IMAGE_ROAD_SIZE);
-            const sf::Vector2u posTo((boxes->GetPosition() + sf::Vector2i(1, 2)) * IMAGE_ROAD_SIZE);
+            const sf::Vector2u posFrom((boxes.second->GetPosition() + sf::Vector2i(1, 1)) * IMAGE_ROAD_SIZE);
+            const sf::Vector2u posTo((boxes.second->GetPosition() + sf::Vector2i(1, 2)) * IMAGE_ROAD_SIZE);
             AddLine(posFrom, posTo);
         }
     }
