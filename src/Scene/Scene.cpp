@@ -2,10 +2,9 @@
 
 #include <memory>
 
-void Scene::Init(const std::shared_ptr<Window>& window, const std::shared_ptr<Settings>& setting)
+void Scene::Init(const std::shared_ptr<Window>& window)
 {
     this->window = window;
-    settings = setting;
 }
 
 void Scene::Update()

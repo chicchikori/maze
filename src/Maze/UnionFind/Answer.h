@@ -11,17 +11,16 @@
 #include <unordered_set>
 #include <vector>
 
-class Line
+class Answer
 {
 public:
-    Line() = default;
-    explicit Line(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window) :
-        settings(setting), window(window) {};
+    Answer() = default;
+    explicit Answer(const std::shared_ptr<Window>& window) : window(window) {};
 
-    void UpdateLine(const std::unordered_set<std::shared_ptr<Uf::Tree>>& trees);
-    void Render(bool showAnswer) const;
+    void UpdateLine(const std::unordered_set<std::shared_ptr<Uf::Tree>>& trees, const MazePeference& preferences);
+    void Render() const;
     static std::vector<sf::Vector2f> SolveMaze(const std::unordered_set<std::shared_ptr<Uf::Tree>>& trees,
-                                               sf::Vector2i start, sf::Vector2i goal);
+                                               sf::Vector2i goal);
 
     [[nodiscard]] std::vector<sf::Vector2f> GetAnswerRoute() const
     {
@@ -29,12 +28,9 @@ public:
     };
 
 private:
-    std::shared_ptr<Settings> settings;
     std::shared_ptr<Window> window;
-    sf::VertexArray linesVArray = sf::VertexArray(sf::PrimitiveType::Lines);
     sf::VertexArray answerLine = sf::VertexArray(sf::PrimitiveType::Lines);
     std::vector<sf::Vector2f> answerRoute;
-    void AddAnswerLine(int index);
-    void AddMazeLine(sf::Vector2f vecFrom, sf::Vector2f vecTo);
+    void AddAnswerLine(int index, const MazePeference& preferences);
     sf::Vector2f AddLine(sf::Vector2f vec2);
 };

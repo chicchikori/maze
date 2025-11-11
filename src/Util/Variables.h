@@ -20,8 +20,15 @@
 #define DROPDOWN_NORMAL_COLOR sf::Color(48, 48, 48)
 #define DROPDOWN_HOVER_COLOR sf::Color(4, 57, 94)
 #define DROPDOWN_ACTIVE_COLOR sf::Color(4, 57, 94)
+// InputText
+#define INPUTTEXT_ROUND_RES 2
+#define INPUTTEXT_ROUND 4
+#define INPUTTEXT_WIDTH 256
+#define INPUTTEXT_HEIGHT 24
+#define INPUTTEXT_BACKGROUND_COLOR sf::Color(48, 48, 48)
 
 #define MAIN_FONT_SIZE 14
+#define DEFAULT_MAZESIZE (sf::Vector2u(10, 10))
 #define BACKGROUND_COLOR sf::Color(30, 30, 30)
 #define GREEN_COLOR sf::Color(130, 178, 108)
 #define BLACK_COLOR sf::Color(54, 57, 59)

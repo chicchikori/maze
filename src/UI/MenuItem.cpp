@@ -23,12 +23,12 @@ namespace Menu
     {
     }
 
-    MenuItem::MenuItem(const std::shared_ptr<Window>& window, const std::shared_ptr<Settings>& settings,
-                       const std::string& label, const std::vector<std::string>& item, int ids) :
+    MenuItem::MenuItem(const std::shared_ptr<Window>& window, const std::string& label,
+                       const std::vector<std::string>& item, int ids) :
         DropDown(
             window, item,
             {(float)ids * MENU_BAR_WIDTH + MENU_BAR_BUTTON_LEFT_MARGIN, MENU_BAR_HEIGHT - MENU_BAR_BUTTON_TOP_MARGIN}),
-        id(ids), window(window), setting(settings), label(label)
+        id(ids), window(window), label(label)
     {
         mainButton =
             Button::RoundedButton(window, MENU_BAR_BUTTON_ROUND_RES, {MENU_BAR_BUTTON_WIDTH, MENU_BAR_BUTTON_HEIGHT},
@@ -70,12 +70,11 @@ namespace Menu
     }
 
     // Menu
-    Menu::Menu(const std::shared_ptr<Window>& window, const std::shared_ptr<Settings>& settings) :
-        window(window), setting(settings)
+    Menu::Menu(const std::shared_ptr<Window>& window) : window(window)
     {
-        menuBarBackground.setSize({(float)setting->GetWindowSize().x, MENU_BAR_HEIGHT});
+        menuBarBackground.setSize({(float)window->GetDisplaySize().x, MENU_BAR_HEIGHT});
         menuBarBackground.setFillColor(MENU_BAR_BACKGROUND_COLOR);
-        menuFile = MenuItem(window, settings, "Files", {"Open", "Save", "Save As", "Save Image", "Quit"}, 0);
+        menuFile = MenuItem(window, "Files", {"Open", "Save", "Save As", "Save Image", "Quit"}, 0);
     }
 
     void Menu::Render()
@@ -110,7 +109,7 @@ namespace Menu
     {
         if (event.is<sf::Event::Resized>())
         {
-            menuBarBackground.setSize({(float)setting->GetWindowSize().x, MENU_BAR_HEIGHT});
+            menuBarBackground.setSize({(float)window->GetDisplaySize().x, MENU_BAR_HEIGHT});
         }
         menuFile.Event(event);
     }

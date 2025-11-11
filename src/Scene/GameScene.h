@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Files/PrintMaze.h"
 #include "../Maze/ControlMaze/Timer.h"
 #include "../Maze/UnionFind/Road.h"
+#include "../UI/InputText.h"
 #include "../UI/MenuItem.h"
 #include "Scene.h"
 
@@ -27,13 +27,12 @@ private:
     std::shared_ptr<Settings> settings;
     std::shared_ptr<Window> window;
     Timer timer;
-    // Uf::UnionFind uf;
     rc::Road road;
+    InputText textInput;
 
     bool isAnswer{true};
     bool createNew{false};
     Menu::Menu menu;
 
-    PrintMaze printer;
     Cont::Control controller;
 };

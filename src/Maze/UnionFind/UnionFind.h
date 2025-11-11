@@ -16,10 +16,11 @@ namespace Uf
     {
     public:
         UnionFind() = default;
-        explicit UnionFind(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window);
+        explicit UnionFind( const std::shared_ptr<Window>& window);
         void Exit();
-        void Create(std::promise<std::unordered_set<std::shared_ptr<Uf::Tree>>>& promiseTree);
-        std::unordered_set<std::shared_ptr<Uf::Tree>> Create(int seed);
+        void Create(std::promise<std::unordered_set<std::shared_ptr<Uf::Tree>>>& promiseTree,
+                    const MazePeference& pref);
+        std::unordered_set<std::shared_ptr<Uf::Tree>> Create(const MazePeference& pref);
 
         static std::atomic<bool> running;
         static std::atomic<bool> isRunThread;
@@ -35,18 +36,15 @@ namespace Uf
         std::jthread th1; // NOLINT
 
     private:
-        void Init();
-
         std::unordered_set<std::shared_ptr<Uf::Tree>> Find();
         static bool Unite(const std::shared_ptr<Node>& node1, const std::shared_ptr<Node>& node2);
         static std::shared_ptr<Node> Root(const std::shared_ptr<Node>& node);
 
         std::shared_ptr<Settings> settings;
+        void Init(const MazePeference& pref);
         std::shared_ptr<Window> window;
-        // std::shared_ptr<rc::Road> road;
-        std::vector<std::shared_ptr<Node>> points; // w * h
-        std::vector<std::shared_ptr<Tree>> edges;
-        std::unordered_set<std::shared_ptr<Tree>> trees;
+        std::vector<std::shared_ptr<Node>> nodes; // w * h
+        std::vector<std::shared_ptr<Tree>> trees; // (w-1)*h + w*(h-1)
 
         PopUp pp;
         bool isAnswer = true;

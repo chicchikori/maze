@@ -3,11 +3,14 @@
 
 #include <SFML/Graphics.hpp>
 #include <cassert>
+#include "../Files/PrintMaze.h"
 #include "Scene.h"
 
 
+
 GameScene::GameScene(const std::shared_ptr<Window>& window, const std::shared_ptr<Settings>& setting) :
-    Scene(window, setting), settings(setting), window(window), road(setting, window)
+    Scene(window), settings(setting), window(window), road(window, setting->GetPreferences()),
+    textInput(window, 5, {40, 10}, 3)
 {
 }
 
@@ -17,11 +20,12 @@ void GameScene::InitScene(const std::shared_ptr<Settings>& setting, const std::s
     settings = setting;
 
     timer.Init(setting, window);
-    road = rc::Road(setting, window);
+    road = rc::Road(window, setting->GetPreferences());
     // uf = Uf::UnionFind(setting, window);
-    printer = PrintMaze(setting);
-    controller = Cont::Control(setting, window);
-    menu = Menu::Menu(window, setting);
+    controller = Cont::Control(window);
+    menu = Menu::Menu(window);
+    textInput = InputText(window, 5, {100, 30}, 3);
+    textInput.setPosition({400.F, 500.F});
 }
 
 void GameScene::Update()
@@ -29,6 +33,7 @@ void GameScene::Update()
     timer.Update();
     menu.Update();
     road.Update();
+    textInput.Update();
     if (!Uf::UnionFind::isRunThread && createNew)
     {
         auto tree = road.GetTree();
@@ -54,12 +59,14 @@ void GameScene::Render()
         timer.RenderTimer();
 
         menu.Render();
+        textInput.Render();
     }
 }
 
 void GameScene::Event(sf::Event& event)
 {
     menu.Event(event);
+    textInput.Event(event);
     if (auto* const key = event.getIf<sf::Event::KeyPressed>())
     {
         switch (key->code)
@@ -68,8 +75,7 @@ void GameScene::Event(sf::Event& event)
             settings->Load();
             break;
         case sf::Keyboard::Key::S:
-            printer.AddInfo(road.GetBoxes(), road.GetAnswer());
-            printer.Save();
+            PrintMaze::Save(settings->GetPreferences());
             break;
         case sf::Keyboard::Key::Space:
             if (!isAnswer)
@@ -93,7 +99,6 @@ void GameScene::Event(sf::Event& event)
     }
     if (event.is<sf::Event::Resized>())
     {
-        // uf.Recenter(controller);
         road.Recenter(controller);
     }
 }

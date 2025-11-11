@@ -8,17 +8,17 @@
 #include <chrono>
 #include <memory>
 
-class Timer {
-   public:
+class Timer
+{
+public:
     Timer();
-    void Init(const std::shared_ptr<Settings>& setting,
-              const std::shared_ptr<Window>& window);
+    void Init(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window);
     void Start();
     void Stop();
     void RenderTimer() const;
     void Update();
 
-   private:
+private:
     std::shared_ptr<Settings> settings;
     std::shared_ptr<Window> window;
     std::chrono::time_point<std::chrono::high_resolution_clock> begin;

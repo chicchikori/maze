@@ -5,14 +5,13 @@
 #include <memory>
 #include <windows.h>
 
-void Window::Init(const std::shared_ptr<Settings>& setting)
+Window::Window(const sf::Vector2u& winSize) :
+    title("Maze Generator"), isFullSizeWindow(false), windowedPos(100, 100), windowedSize(800, 600)
 {
-    settings = setting;
     sf::ContextSettings context;
     context.antiAliasingLevel = 8;
-    window = std::make_shared<sf::RenderWindow>(sf::VideoMode(settings->GetWindowSize()), title, sf::Style::Default,
-                                                sf::State::Windowed, context);
-    isFullSizeWindow = false;
+    window = std::make_shared<sf::RenderWindow>(sf::VideoMode(winSize), title, sf::Style::Default, sf::State::Windowed,
+                                                context);
 }
 
 void Window::Event(sf::Event& event)
@@ -21,7 +20,6 @@ void Window::Event(sf::Event& event)
     {
         const sf::FloatRect visibleArea(sf::Vector2f(0, 0), static_cast<sf::Vector2f>(windowResize->size));
         window->setView(sf::View(visibleArea));
-        settings->SetWindowSize(windowResize->size);
     }
     if (const auto key = event.getIf<sf::Event::KeyReleased>())
     {
@@ -88,7 +86,8 @@ void Window::Fullscreen()
     MONITORINFO monitorInfo = {sizeof(monitorInfo)};
     if (GetMonitorInfo(hmon, &monitorInfo))
     {
-        SetWindowPos(hwnd, HWND_TOP, monitorInfo.rcMonitor.left, monitorInfo.rcMonitor.top, monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left,
+        SetWindowPos(hwnd, HWND_TOP, monitorInfo.rcMonitor.left, monitorInfo.rcMonitor.top,
+                     monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left,
                      monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top, SWP_FRAMECHANGED | SWP_NOOWNERZORDER);
     }
     isFullSizeWindow = true;
@@ -103,4 +102,10 @@ void Window::SetTitle(const sf::String& titles)
 std::shared_ptr<sf::RenderWindow> Window::GetWindow() const
 {
     return window;
+}
+
+
+[[nodiscard]] sf::Vector2u Window::GetDisplaySize() const
+{
+    return {window->getSize().x, window->getSize().y - MENU_BAR_HEIGHT};
 }

@@ -11,24 +11,22 @@ enum class SceneState
     MazeGame,
     SaveAsImage,
     Setting,
-    Save,
 };
 
 class Scene
 {
 public:
     Scene() = default;
-    Scene(const std::shared_ptr<Window>& window, const std::shared_ptr<Settings>& setting)
+    Scene(const std::shared_ptr<Window>& window)
     {
-        Init(window, setting);
+        Init(window);
     };
-    void Init(const std::shared_ptr<Window>& window, const std::shared_ptr<Settings>& setting);
+    void Init(const std::shared_ptr<Window>& window);
     virtual ~Scene();
     virtual void Update();
     virtual void Event(sf::Event& event);
     virtual void Render();
 
 private:
-    std::shared_ptr<Settings> settings;
     std::shared_ptr<Window> window;
 };

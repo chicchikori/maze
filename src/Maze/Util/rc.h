@@ -46,10 +46,4 @@ namespace rc
         bool isTop{false};
     };
 
-    enum class RENDERMODE
-    {
-        ROAD,
-        LINE,
-        BOTH
-    };
 } // namespace rc

@@ -19,7 +19,7 @@ namespace Menu
     {
     public:
         MenuItem();
-        MenuItem(const std::shared_ptr<Window>& window, const std::shared_ptr<Settings>& settings,
+        MenuItem(const std::shared_ptr<Window>& window,
                  const std::string& label = "", const std::vector<std::string>& item = {}, int ids = -1);
 
         void Render();
@@ -33,7 +33,6 @@ namespace Menu
     private:
         int id;
         std::shared_ptr<Window> window;
-        std::shared_ptr<Settings> setting;
 
         sf::Vector2f size;
 
@@ -48,7 +47,7 @@ namespace Menu
     {
     public:
         Menu() = default;
-        Menu(const std::shared_ptr<Window>& window, const std::shared_ptr<Settings>& settings);
+        Menu(const std::shared_ptr<Window>& window);
         void Render();
         void Update();
         void Event(sf::Event& event);

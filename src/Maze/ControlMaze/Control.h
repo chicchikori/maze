@@ -28,9 +28,9 @@ namespace Cont
     {
     public:
         Control() = default;
-        explicit Control(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window);
-        Control(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window,
-                const std::unordered_set<std::shared_ptr<Uf::Tree>>& tree);
+        explicit Control(const std::shared_ptr<Window>& window);
+        Control(const std::shared_ptr<Window>& window, const std::unordered_set<std::shared_ptr<Uf::Tree>>& tree,
+                const MazePeference& preferences);
         void SetTree(const std::unordered_set<std::shared_ptr<Uf::Tree>>& tree);
         void Render() const;
         void Update();
@@ -40,7 +40,7 @@ namespace Cont
         void Init();
         void Move(sf::Vector2i delta);
         void AddLine(sf::Vector2f pos1, sf::Vector2f pos2);
-        std::shared_ptr<Settings> settings;
+        MazePeference preferences;
         std::shared_ptr<Window> window;
         sf::Vector2i currentPos{-1, -1};
         std::vector<sf::Vector2i> route;

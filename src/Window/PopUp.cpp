@@ -12,12 +12,12 @@
 #include <memory>
 
 
-PopUp::PopUp() : progressPercentText(Fonts::font, "", 16)
+PopUp::PopUp() : progressPercentText(Text::Fonts::font, "", 16)
 {
 }
 
-PopUp::PopUp(const std::shared_ptr<Window>& window, const std::shared_ptr<Settings>& settings) :
-    setting(settings), window(window), progressPercentText(Fonts::font, "", 14)
+PopUp::PopUp(const std::shared_ptr<Window>& window) :
+    window(window), progressPercentText(Text::Fonts::font, "", 14)
 {
     background.setSize(popSize);
     background.setFillColor(sf::Color(10, 10, 10));
@@ -32,7 +32,7 @@ PopUp::PopUp(const std::shared_ptr<Window>& window, const std::shared_ptr<Settin
 
 void PopUp::PopProgress()
 {
-    sf::Vector2f center = static_cast<sf::Vector2f>(setting->GetWindowSize()) / 2.F;
+    sf::Vector2f center = static_cast<sf::Vector2f>(window->GetWindow()->getSize()) / 2.F;
     float progressValue = (static_cast<float>(Uf::UnionFind::progress) / static_cast<float>(size));
 
     progressBar.setSize(sf::Vector2f(progressValue * (popSize.x - margin * 2), progressbarWidth));
