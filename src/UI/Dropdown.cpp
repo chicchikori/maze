@@ -2,22 +2,22 @@
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <utility>
+#include "../Game.h"
 #include "../Util/Variables.h"
 #include "Button.h"
 #include "Fonts.h"
 
 
-DropDown::DropDown(const std::shared_ptr<Window>& window, const std::vector<std::string>& item, sf::Vector2f position) :
-    window(window), position(position)
+DropDown::DropDown(const std::vector<std::string>& item, sf::Vector2f position) : position(position)
 {
     int index = 0;
     for (const auto& str : item)
     {
-        items.try_emplace(index,
-                          std::make_pair(Button::RoundedButton(window, DROPDOWN_ROUND_RES,
-                                                               {DROPDOWN_CONTENT_WIDTH, DROPDOWN_CONTENT_HEIGHT},
-                                                               DROPDOWN_ROUND, str, {.rl = Text::AlignRL::LEFT}),
-                                         false));
+        items.try_emplace(
+            index,
+            std::make_pair(Button::RoundedButton(DROPDOWN_ROUND_RES, {DROPDOWN_CONTENT_WIDTH, DROPDOWN_CONTENT_HEIGHT},
+                                                 DROPDOWN_ROUND, str, {.rl = Text::AlignRL::LEFT}),
+                           false));
         items[index].first.SetPosition(
             position +
             sf::Vector2f(DROPDOWN_MARGIN,
@@ -37,7 +37,7 @@ DropDown::DropDown(const std::shared_ptr<Window>& window, const std::vector<std:
 
 void DropDown::Render()
 {
-    window->GetWindow()->draw(background);
+    Game::window.GetWindow()->draw(background);
     for (auto& item : items)
     {
         item.second.first.Render();

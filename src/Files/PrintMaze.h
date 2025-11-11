@@ -16,7 +16,7 @@
 class PrintMaze
 {
 public:
-    static bool Save(const MazePeference& pref);
+    static bool Save(const std::shared_ptr<MazePeference>& pref);
 
 private:
     static sf::Image DrawMazeImage(const MazePeference& pref,

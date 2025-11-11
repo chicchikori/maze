@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../Files/Settings.h"
 #include "../Util/uf.h"
+#include "Preference.h"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Vertex.hpp>
@@ -15,7 +15,6 @@ class Answer
 {
 public:
     Answer() = default;
-    explicit Answer(const std::shared_ptr<Window>& window) : window(window) {};
 
     void UpdateLine(const std::unordered_set<std::shared_ptr<Uf::Tree>>& trees, const MazePeference& preferences);
     void Render() const;
@@ -28,7 +27,6 @@ public:
     };
 
 private:
-    std::shared_ptr<Window> window;
     sf::VertexArray answerLine = sf::VertexArray(sf::PrimitiveType::Lines);
     std::vector<sf::Vector2f> answerRoute;
     void AddAnswerLine(int index, const MazePeference& preferences);

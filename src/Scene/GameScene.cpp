@@ -3,41 +3,34 @@
 
 #include <SFML/Graphics.hpp>
 #include <cassert>
+#include "../Files/MazeFiles.h"
 #include "../Files/PrintMaze.h"
-#include "Scene.h"
 
 
-
-GameScene::GameScene(const std::shared_ptr<Window>& window, const std::shared_ptr<Settings>& setting) :
-    Scene(window), settings(setting), window(window), road(window, setting->GetPreferences()),
-    textInput(window, 5, {40, 10}, 3)
+GameScene::GameScene(const std::shared_ptr<MazePeference>& pref) : pref(pref), road(pref)
 {
 }
 
-void GameScene::InitScene(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window)
+void GameScene::InitScene(const std::shared_ptr<MazePeference>& pref)
 {
-    this->window = window;
-    settings = setting;
+    this->pref = pref;
 
-    timer.Init(setting, window);
-    road = rc::Road(window, setting->GetPreferences());
-    // uf = Uf::UnionFind(setting, window);
-    controller = Cont::Control(window);
-    menu = Menu::Menu(window);
-    textInput = InputText(window, 5, {100, 30}, 3);
-    textInput.setPosition({400.F, 500.F});
+    timer.Init();
+    pref->Center();
+    road = rc::Road(pref);
+    controller = Cont::Control();
+    menu = Menu::Menu();
 }
 
 void GameScene::Update()
 {
     timer.Update();
-    menu.Update();
+    menu.Update(*pref);
     road.Update();
-    textInput.Update();
     if (!Uf::UnionFind::isRunThread && createNew)
     {
         auto tree = road.GetTree();
-        controller.SetTree(tree);
+        controller.SetTree(tree, *pref);
 
         createNew = false;
     }
@@ -59,23 +52,21 @@ void GameScene::Render()
         timer.RenderTimer();
 
         menu.Render();
-        textInput.Render();
     }
 }
 
 void GameScene::Event(sf::Event& event)
 {
     menu.Event(event);
-    textInput.Event(event);
     if (auto* const key = event.getIf<sf::Event::KeyPressed>())
     {
         switch (key->code)
         {
         case sf::Keyboard::Key::L:
-            settings->Load();
+            Files::LoadMaze(*pref);
             break;
         case sf::Keyboard::Key::S:
-            PrintMaze::Save(settings->GetPreferences());
+            PrintMaze::Save(pref);
             break;
         case sf::Keyboard::Key::Space:
             if (!isAnswer)
@@ -95,7 +86,7 @@ void GameScene::Event(sf::Event& event)
 
         default:;
         }
-        controller.Event(event);
+        controller.Event(event, *pref);
     }
     if (event.is<sf::Event::Resized>())
     {

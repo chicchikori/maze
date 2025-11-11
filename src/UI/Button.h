@@ -6,10 +6,8 @@
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
-#include <memory>
 #include <string>
 #include "../UI/Fonts.h"
-#include "../Window/Window.h"
 #include "RoundedRectangle.h"
 
 
@@ -20,12 +18,11 @@ namespace Button
     class RoundedButton : public RoundedRectangle
     {
     public:
-        RoundedButton();
-        RoundedButton(const std::shared_ptr<Window>& window, unsigned int res = 0, sf::Vector2f size = {},
-                      float round = 0, const std::string& label = "",
-                      Text::LabelAlign align = {.rl = Text::AlignRL::CENTER, .tb = Text::AlignUB::CENTER},
-                      sf::Color normalColor = {100, 100, 100}, sf::Color hoverColor = {80, 80, 80},
-                      sf::Color activeColor = {30, 30, 30});
+        explicit RoundedButton(unsigned int res = 0, sf::Vector2f size = {}, float round = 0,
+                               const std::string& label = "",
+                               Text::LabelAlign align = {.rl = Text::AlignRL::CENTER, .tb = Text::AlignUB::CENTER},
+                               sf::Color normalColor = {100, 100, 100}, sf::Color hoverColor = {80, 80, 80},
+                               sf::Color activeColor = {30, 30, 30});
         void Event(sf::Event& event);
         void Render();
         void SetColor(sf::Color normalColor, sf::Color hoverColor, sf::Color activeColor);
@@ -65,7 +62,6 @@ namespace Button
     private:
         // void CalcLabelPos(LabelAlign align);
         Text::LabelAlign align;
-        std::shared_ptr<Window> window;
         sf::Color normalColor{100, 100, 100};
         sf::Color hoverColor{80, 80, 80};
         sf::Color activeColor{30, 30, 30};

@@ -1,9 +1,7 @@
 #pragma once
 
-#include "../Files/Settings.h"
 
 #include <SFML/Graphics.hpp>
-#include <memory>
 
 enum class SceneState
 {
@@ -16,17 +14,15 @@ enum class SceneState
 class Scene
 {
 public:
-    Scene() = default;
-    Scene(const std::shared_ptr<Window>& window)
+    Scene()
     {
-        Init(window);
+        Init();
     };
-    void Init(const std::shared_ptr<Window>& window);
+    void Init();
     virtual ~Scene();
     virtual void Update();
     virtual void Event(sf::Event& event);
     virtual void Render();
 
 private:
-    std::shared_ptr<Window> window;
 };

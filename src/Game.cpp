@@ -16,23 +16,24 @@
 
 SceneState Game::scene{SceneState::MazeGame};
 bool Game::isOpen{true};
-std::shared_ptr<Window> Game::window = std::make_shared<Window>(sf::Vector2u(800, 600));
+Window Game::window(sf::Vector2u(800, 600));
 
 Game::Game()
 {
-    settings = std::make_shared<Settings>(window);
+    settings = std::make_shared<Settings>();
     scene = SceneState::MazeGame;
 }
 
 Game::Game(const std::string& filePath)
 {
-    settings = std::make_shared<Settings>(window, filePath);
+    settings = std::make_shared<Settings>(filePath);
     scene = SceneState::MazeGame;
 }
 
 void Game::Init()
 {
-    game.InitScene(settings, window);
+    game.InitScene(settings->GetPreference());
+    saveScene.Init();
     // settings->Load();
 }
 
@@ -51,11 +52,11 @@ void Game::Run()
 
 void Game::Event()
 {
-    while (auto event = window->GetWindow()->pollEvent())
+    while (auto event = window.GetWindow()->pollEvent())
     {
         if (event.has_value())
         {
-            window->Event(*event);
+            window.Event(*event);
             if (event->is<sf::Event::Closed>())
             {
                 game.Exit();
@@ -101,7 +102,7 @@ void Game::Update()
 
 void Game::Render()
 {
-    window->GetWindow()->clear(BACKGROUND_COLOR);
+    window.GetWindow()->clear(BACKGROUND_COLOR);
     switch (scene)
     {
         using enum SceneState;
@@ -116,5 +117,5 @@ void Game::Render()
     case Setting:
         break;
     }
-    window->GetWindow()->display();
+    window.GetWindow()->display();
 }

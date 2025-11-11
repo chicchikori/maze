@@ -4,14 +4,11 @@
 #include "Scene.h"
 
 
+#include "../Util/Variables.h"
 class SaveAsScene : public Scene
 {
 public:
     SaveAsScene() = default;
-    SaveAsScene(const std::shared_ptr<Window>& window)
-    {
-        Init(window);
-    };
     void Update() override;
     void Event(sf::Event& event) override;
     void Render() override;

@@ -2,7 +2,6 @@
 
 #include "../Maze/ControlMaze/Timer.h"
 #include "../Maze/UnionFind/Road.h"
-#include "../UI/InputText.h"
 #include "../UI/MenuItem.h"
 #include "Scene.h"
 
@@ -15,8 +14,8 @@ class GameScene final : public Scene
 {
 public:
     GameScene() = default;
-    explicit GameScene(const std::shared_ptr<Window>& window, const std::shared_ptr<Settings>& setting);
-    void InitScene(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window);
+    explicit GameScene(const std::shared_ptr<MazePeference>& pref);
+    void InitScene(const std::shared_ptr<MazePeference>& pref);
     ~GameScene() override = default;
     void Update() override;
     void Render() override;
@@ -24,11 +23,9 @@ public:
     void Exit();
 
 private:
-    std::shared_ptr<Settings> settings;
-    std::shared_ptr<Window> window;
+    std::shared_ptr<MazePeference> pref;
     Timer timer;
     rc::Road road;
-    InputText textInput;
 
     bool isAnswer{true};
     bool createNew{false};

@@ -1,12 +1,16 @@
 #include "Answer.h"
 
+#include "../../Game.h"
+#include "../../Util/Variables.h"
 #include "../../Util/Vec2.h"
+
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <memory>
 #include <stack>
 #include <unordered_set>
+
 
 std::vector<sf::Vector2f> Answer::SolveMaze(const std::unordered_set<std::shared_ptr<Uf::Tree>>& trees,
                                             sf::Vector2i goal)
@@ -93,5 +97,5 @@ void Answer::AddAnswerLine(int index, const MazePeference& preferences)
 
 void Answer::Render() const
 {
-    window->GetWindow()->draw(answerLine);
+    Game::window.GetWindow()->draw(answerLine);
 }

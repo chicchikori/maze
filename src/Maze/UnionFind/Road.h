@@ -1,10 +1,13 @@
 #pragma once
 
+#include "../../Util/Variables.h"
 #include "../ControlMaze/Control.h"
 #include "../Util/rc.h"
 #include "../Util/uf.h"
 #include "Answer.h"
+#include "Preference.h"
 #include "UnionFind.h"
+
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -20,7 +23,7 @@ namespace rc
     {
     public:
         Road() = default;
-        explicit Road(const std::shared_ptr<Window>& window, const MazePeference& pref);
+        explicit Road(const std::shared_ptr<MazePeference>& pref);
 
         void RenderAnswer() const;
 
@@ -30,7 +33,7 @@ namespace rc
             return trees;
         }
 
-        void UpdateLines();
+        void UpdateLines(const MazePeference& pref);
 
         void Recenter(Cont::Control& controlers);
 
@@ -40,7 +43,7 @@ namespace rc
 
         void CreateUf();
 
-        void CreateNewUf(MazePeference pref);
+        void CreateNewUf(MazePeference& pref);
 
         std::unordered_map<sf::Vector2i, std::shared_ptr<Point>, Vec2Hash> GetBoxes() const
         {
@@ -55,7 +58,7 @@ namespace rc
         void Exit();
 
     private:
-        void AddArrow();
+        void AddArrow(const MazePeference& pref);
         void Init(const MazePeference& pref);
         void AddRoad(sf::Vector2f pos1, const std::shared_ptr<rc::Point>& box);
         void ModifyBoxWalls();
@@ -63,8 +66,7 @@ namespace rc
 
         std::promise<std::unordered_set<std::shared_ptr<Uf::Tree>>> promiseTree;
 
-        std::shared_ptr<Window> window;
-        MazePeference pref;
+        std::shared_ptr<MazePeference> pref;
         Answer line;
         std::unordered_set<std::shared_ptr<Uf::Tree>> trees;
         std::unordered_map<sf::Vector2i, std::shared_ptr<Point>, Vec2Hash> boxes;

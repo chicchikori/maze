@@ -3,12 +3,12 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <iostream>
 #include <string>
+#include "../Game.h"
 #include "RoundedRectangle.h"
 
 
-InputText::InputText(const std::shared_ptr<Window>& window, unsigned int res, sf::Vector2f size, float round,
-                     std::string defaultText) :
-    RoundedRectangle(res, size, round), window(window), currentString(std::move(defaultText))
+InputText::InputText(unsigned int res, sf::Vector2f size, float round, std::string defaultText) :
+    RoundedRectangle(res, size, round), currentString(std::move(defaultText))
 {
 }
 
@@ -78,10 +78,10 @@ void InputText::Update()
 
 void InputText::Render()
 {
-    window->GetWindow()->draw(*this);
-    window->GetWindow()->draw(inputText);
+    Game::window.GetWindow()->draw(*this);
+    Game::window.GetWindow()->draw(inputText);
     if (isActive)
     {
-        window->GetWindow()->draw(cursor);
+        Game::window.GetWindow()->draw(cursor);
     }
 }

@@ -3,16 +3,16 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Mouse.hpp>
+#include "../Game.h"
 #include "Fonts.h"
 #include "RoundedRectangle.h"
 
 
-Button::RoundedButton::RoundedButton() : align(), label(Text::Fonts::font) {};
 
-Button::RoundedButton::RoundedButton(const std::shared_ptr<Window>& window, unsigned int res, sf::Vector2f size,
-                                     float round, const std::string& label, Text::LabelAlign align,
-                                     sf::Color normalColor, sf::Color hoverColor, sf::Color activeColor) :
-    RoundedRectangle(res, size, round), align(align), window(window), normalColor(normalColor), hoverColor(hoverColor),
+Button::RoundedButton::RoundedButton(unsigned int res, sf::Vector2f size, float round, const std::string& label,
+                                     Text::LabelAlign align, sf::Color normalColor, sf::Color hoverColor,
+                                     sf::Color activeColor) :
+    RoundedRectangle(res, size, round), align(align), normalColor(normalColor), hoverColor(hoverColor),
     activeColor(activeColor), label(Text::Fonts::font, label, 16)
 {
     this->label.setFillColor(sf::Color::White);
@@ -49,8 +49,8 @@ void Button::RoundedButton::Render()
     {
         this->setFillColor(normalColor);
     }
-    window->GetWindow()->draw(*this);
-    window->GetWindow()->draw(label);
+    Game::window.GetWindow()->draw(*this);
+    Game::window.GetWindow()->draw(label);
 }
 
 void Button::RoundedButton::SetColor(sf::Color normalColor, sf::Color hoverColor, sf::Color activeColor)

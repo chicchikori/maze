@@ -19,9 +19,6 @@ std::atomic<bool> Uf::UnionFind::running(false);
 std::atomic<bool> Uf::UnionFind::isRunThread(false);
 std::atomic<int> Uf::UnionFind::progress(0);
 
-Uf::UnionFind::UnionFind(const std::shared_ptr<Window>& window) : window(window), pp(window)
-{
-}
 
 void Uf::UnionFind::Init(const MazePeference& pref)
 {

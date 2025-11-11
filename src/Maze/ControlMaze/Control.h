@@ -1,5 +1,4 @@
 #pragma once
-#include "../../Files/Settings.h"
 #include "../../Util/Vec2.h"
 
 #include <SFML/Graphics.hpp>
@@ -14,6 +13,7 @@
 #include "../Util/uf.h"
 
 
+#include "../UnionFind/Preference.h"
 namespace Cont
 {
     enum class MoveDir
@@ -28,20 +28,16 @@ namespace Cont
     {
     public:
         Control() = default;
-        explicit Control(const std::shared_ptr<Window>& window);
-        Control(const std::shared_ptr<Window>& window, const std::unordered_set<std::shared_ptr<Uf::Tree>>& tree,
-                const MazePeference& preferences);
-        void SetTree(const std::unordered_set<std::shared_ptr<Uf::Tree>>& tree);
+        Control(const std::unordered_set<std::shared_ptr<Uf::Tree>>& tree, const MazePeference& pref);
+        void SetTree(const std::unordered_set<std::shared_ptr<Uf::Tree>>& tree, const MazePeference& pref);
         void Render() const;
-        void Update();
-        void Event(sf::Event& event);
+        void Update(const MazePeference& pref);
+        void Event(sf::Event& event, const MazePeference& pref);
 
     private:
-        void Init();
-        void Move(sf::Vector2i delta);
-        void AddLine(sf::Vector2f pos1, sf::Vector2f pos2);
-        MazePeference preferences;
-        std::shared_ptr<Window> window;
+        void Init(const MazePeference& pref);
+        void Move(sf::Vector2i delta, const MazePeference& pref);
+        void AddLine(sf::Vector2f pos1, sf::Vector2f pos2, const MazePeference& pref);
         sf::Vector2i currentPos{-1, -1};
         std::vector<sf::Vector2i> route;
         sf::VertexArray controlLine = sf::VertexArray(sf::PrimitiveType::Lines);
