@@ -3,48 +3,39 @@
 #include "tinyfiledialogs.h"
 
 #include <SFML/Graphics.hpp>
-#include <SFML/Graphics/Color.hpp>
-#include <SFML/Graphics/Image.hpp>
-#include <SFML/System/Vector2.hpp>
 #include <algorithm>
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
+#include "../Maze/UnionFind/Road.h"
 #include "../Util/Variables.h"
 
-PrintMaze::PrintMaze(const std::shared_ptr<Settings>& setting,
-                     const std::unordered_map<sf::Vector2i, std::shared_ptr<rc::Point>, Vec2Hash>& boxes,
-                     const std::vector<sf::Vector2f>& answerRoute) : settings(setting), box(boxes), answer(answerRoute)
-{
-}
 
-void PrintMaze::AddInfo(const std::unordered_map<sf::Vector2i, std::shared_ptr<rc::Point>, Vec2Hash>& boxes,
-                        const std::vector<sf::Vector2f>& answerRoute)
+sf::Image PrintMaze::DrawMazeImage(const MazePeference& pref,
+                                   const std::unordered_map<sf::Vector2i, std::shared_ptr<rc::Point>, Vec2Hash>& box)
 {
-    box = boxes;
-    answer = answerRoute;
-}
-
-void PrintMaze::Create()
-{
-    mazeImage =
-        sf::Image((settings->GetMazeSize() + sf::Vector2u(2, 2)) * static_cast<unsigned>(IMAGE_ROAD_SIZE), WHITE_COLOR);
+    auto mazeImage =
+        sf::Image((pref.GetMazeSize() + sf::Vector2u(2, 2)) * static_cast<unsigned>(IMAGE_ROAD_SIZE), WHITE_COLOR);
     for (const auto& boxes : box)
     {
         if (!(boxes.second->IsTop()))
         {
             const sf::Vector2u posFrom((boxes.second->GetPosition() + sf::Vector2i(1, 1)) * IMAGE_ROAD_SIZE);
             const sf::Vector2u posTo((boxes.second->GetPosition() + sf::Vector2i(2, 1)) * IMAGE_ROAD_SIZE);
-            AddLine(posFrom, posTo);
+            AddLine(posFrom, posTo, mazeImage);
         }
         if (!(boxes.second->IsLeft()))
         {
             const sf::Vector2u posFrom((boxes.second->GetPosition() + sf::Vector2i(1, 1)) * IMAGE_ROAD_SIZE);
             const sf::Vector2u posTo((boxes.second->GetPosition() + sf::Vector2i(1, 2)) * IMAGE_ROAD_SIZE);
-            AddLine(posFrom, posTo);
+            AddLine(posFrom, posTo, mazeImage);
         }
     }
-    answerImage = sf::Image(mazeImage);
+    return mazeImage;
+}
+sf::Image PrintMaze::DrawMazeAnswerImage(const sf::Image& mazeImage, const std::vector<sf::Vector2f>& answer)
+{
+    auto answerImage = sf::Image(mazeImage);
     for (int i = 0; i < answer.size() - 1; i++)
     {
         const sf::Vector2u vectorFrom{
@@ -53,13 +44,21 @@ void PrintMaze::Create()
         const sf::Vector2u vectorTo{
             sf::Vector2u(static_cast<unsigned>(IMAGE_ROAD_SIZE >> 1), static_cast<unsigned>(IMAGE_ROAD_SIZE >> 1)) +
             static_cast<sf::Vector2u>((answer[i + 1] + sf::Vector2f(1, 1)) * static_cast<float>(IMAGE_ROAD_SIZE))};
-        AddLine(vectorFrom, vectorTo, true);
+        AddLine(vectorFrom, vectorTo, answerImage, true);
     }
+    return answerImage;
 }
 
-bool PrintMaze::Save()
+bool PrintMaze::Save(const MazePeference& pref)
 {
-    Create();
+    auto road = rc::Road(nullptr, pref);
+    road.CreateNewUf(pref);
+
+    auto answer = Answer::SolveMaze(road.GetTree(), pref.GetGoalPos());
+
+    sf::Image mazeImage = DrawMazeImage(pref, road.GetBoxes());
+    sf::Image answerImage = DrawMazeAnswerImage(mazeImage, answer);
+
     auto saveDirectory = std::filesystem::path(tinyfd_selectFolderDialog("select save folder", ""));
     saveDirectory += "\\maze";
     const auto mazePath = saveDirectory.replace_filename("maze.png");
@@ -78,7 +77,7 @@ bool PrintMaze::Save()
     return isSuccessMaze && isSuccessAnswer;
 }
 
-void PrintMaze::AddLine(const sf::Vector2u posFrom, const sf::Vector2u posTo, const bool isAnswer)
+void PrintMaze::AddLine(const sf::Vector2u& posFrom, const sf::Vector2u& posTo, sf::Image& image, const bool& isAnswer)
 {
     if (posFrom == posTo)
     {
@@ -92,7 +91,6 @@ void PrintMaze::AddLine(const sf::Vector2u posFrom, const sf::Vector2u posTo, co
 
     const sf::Vector2i crossNormal = posFrom.x == posTo.x ? sf::Vector2i(1, 0) : sf::Vector2i(0, 1);
 
-    auto& image = isAnswer ? answerImage : mazeImage;
     const sf::Color color = isAnswer ? RED_COLOR : BLACK_COLOR;
 
     for (int i = -IMAGE_WALL_SIZE; i <= length + IMAGE_WALL_SIZE; i++)

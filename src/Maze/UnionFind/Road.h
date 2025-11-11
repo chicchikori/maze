@@ -1,10 +1,9 @@
 #pragma once
 
-#include "../../Files/Settings.h"
 #include "../ControlMaze/Control.h"
 #include "../Util/rc.h"
 #include "../Util/uf.h"
-#include "Line.h"
+#include "Answer.h"
 #include "UnionFind.h"
 
 #include <SFML/Graphics.hpp>
@@ -21,11 +20,10 @@ namespace rc
     {
     public:
         Road() = default;
-        explicit Road(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window);
+        explicit Road(const std::shared_ptr<Window>& window, const MazePeference& pref);
 
         void RenderAnswer() const;
 
-        void SetMode(RENDERMODE modes);
 
         std::unordered_set<std::shared_ptr<Uf::Tree>> GetTree() const
         {
@@ -42,6 +40,8 @@ namespace rc
 
         void CreateUf();
 
+        void CreateNewUf(MazePeference pref);
+
         std::unordered_map<sf::Vector2i, std::shared_ptr<Point>, Vec2Hash> GetBoxes() const
         {
             return boxes;
@@ -56,16 +56,16 @@ namespace rc
 
     private:
         void AddArrow();
-        void Init();
+        void Init(const MazePeference& pref);
         void AddRoad(sf::Vector2f pos1, const std::shared_ptr<rc::Point>& box);
+        void ModifyBoxWalls();
 
 
         std::promise<std::unordered_set<std::shared_ptr<Uf::Tree>>> promiseTree;
 
-        std::shared_ptr<Settings> settings;
         std::shared_ptr<Window> window;
-        Line line;
-        RENDERMODE mode = RENDERMODE::ROAD;
+        MazePeference pref;
+        Answer line;
         std::unordered_set<std::shared_ptr<Uf::Tree>> trees;
         std::unordered_map<sf::Vector2i, std::shared_ptr<Point>, Vec2Hash> boxes;
 

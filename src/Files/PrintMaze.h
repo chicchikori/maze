@@ -1,34 +1,27 @@
 #pragma once
 
-#include "../Files/Settings.h"
+
 #include "../Maze/Util/rc.h"
 #include "../Util/Vec2.h"
+
 
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <memory>
 #include <unordered_map>
 #include <vector>
+#include "../Maze/UnionFind/Preference.h"
+
 
 class PrintMaze
 {
 public:
-    PrintMaze() = default;
-
-    explicit PrintMaze(const std::shared_ptr<Settings>& setting) : settings(setting) {};
-    PrintMaze(const std::shared_ptr<Settings>& setting,
-              const std::unordered_map<sf::Vector2i, std::shared_ptr<rc::Point>, Vec2Hash>& boxes,
-              const std::vector<sf::Vector2f>& answerRoute);
-    void AddInfo(const std::unordered_map<sf::Vector2i, std::shared_ptr<rc::Point>, Vec2Hash>& boxes,
-                 const std::vector<sf::Vector2f>& answerRoute);
-    void Create();
-    bool Save();
+    static bool Save(const MazePeference& pref);
 
 private:
-    std::shared_ptr<Settings> settings;
-    void AddLine(sf::Vector2u posFrom, sf::Vector2u posTo, bool isAnswer = false);
-    sf::Image mazeImage;
-    sf::Image answerImage;
-    std::unordered_map<sf::Vector2i, std::shared_ptr<rc::Point>, Vec2Hash> box;
-    std::vector<sf::Vector2f> answer;
+    static sf::Image DrawMazeImage(const MazePeference& pref,
+                                   const std::unordered_map<sf::Vector2i, std::shared_ptr<rc::Point>, Vec2Hash>& box);
+    static sf::Image DrawMazeAnswerImage(const sf::Image& mazeImage, const std::vector<sf::Vector2f>& answer);
+    static void AddLine(const sf::Vector2u& posFrom, const sf::Vector2u& posTo, sf::Image& image,
+                        const bool& isAnswer = false);
 };

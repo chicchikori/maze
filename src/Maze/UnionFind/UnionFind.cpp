@@ -13,28 +13,28 @@
 #include <utility>
 #include <vector>
 #include "../Util/uf.h"
+#include "Preference.h"
 
 std::atomic<bool> Uf::UnionFind::running(false);
 std::atomic<bool> Uf::UnionFind::isRunThread(false);
 std::atomic<int> Uf::UnionFind::progress(0);
 
-Uf::UnionFind::UnionFind(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window) :
-    settings(setting), window(window), pp(window, setting)
+Uf::UnionFind::UnionFind(const std::shared_ptr<Window>& window) : window(window), pp(window)
 {
 }
 
-void Uf::UnionFind::Init()
+void Uf::UnionFind::Init(const MazePeference& pref)
 {
-    const auto width = static_cast<int>(settings->GetMazeSize().x);
-    const auto height = static_cast<int>(settings->GetMazeSize().y);
-    std::seed_seq seq{settings->GetSeeds()};
+    const auto width = static_cast<int>(pref.GetMazeSize().x);
+    const auto height = static_cast<int>(pref.GetMazeSize().y);
+    std::seed_seq seq{pref.GetSeeds()};
     std::mt19937 rng;
     rng.seed(seq);
     std::uniform_int_distribution<std::mt19937::result_type> dist(0, INT_MAX);
 
-    // init points
-    points.clear();
-    points.reserve((static_cast<size_t>(width * height)));
+    // init nodes
+    nodes.clear();
+    nodes.reserve((static_cast<size_t>(width * height)));
     ID ids = 0;
     for (int y = 0; y < height; y++) // NOLINT
     {
@@ -42,17 +42,17 @@ void Uf::UnionFind::Init()
         {
             auto point = std::make_shared<Node>(ids++, sf::Vector2i(x, y));
             point->root = point;
-            points.emplace_back(point);
+            nodes.emplace_back(point);
         }
     }
-    edges.clear();
-    edges.reserve((width - 1) * height + width * (height - 1));
+    trees.clear();
+    trees.reserve((width - 1) * height + width * (height - 1));
     for (int y = 0; y < height; y++) // NOLINT
     {
         for (int x = 0; x < width - 1; x++) // NOLINT
         {
-            edges.emplace_back(
-                std::make_shared<Tree>(points.at(y * width + x), points.at(y * width + x + 1), dist(rng), true));
+            trees.emplace_back(
+                std::make_shared<Tree>(nodes.at(y * width + x), nodes.at(y * width + x + 1), dist(rng), true));
         }
         if (y == height - 1)
         {
@@ -60,31 +60,29 @@ void Uf::UnionFind::Init()
         }
         for (int x = 0; x < width; x++) // NOLINT
         {
-            edges.emplace_back(
-                std::make_shared<Tree>(points.at(y * width + x), points.at((y + 1) * width + x), dist(rng), false));
+            trees.emplace_back(
+                std::make_shared<Tree>(nodes.at(y * width + x), nodes.at((y + 1) * width + x), dist(rng), false));
         }
     }
 }
-void Uf::UnionFind::Create(std::promise<std::unordered_set<std::shared_ptr<Uf::Tree>>>& promiseTree)
+void Uf::UnionFind::Create(std::promise<std::unordered_set<std::shared_ptr<Uf::Tree>>>& promiseTree,
+                           const MazePeference& pref)
 {
-    settings->UpdateSeed();
-
-
     if (!running)
     {
         if (th1.joinable())
         {
             th1.join();
         }
-        Init();
+        Init(pref);
         th1 = std::jthread(
-            [this, &promiseTree]()
+            [this, &promiseTree, pref]()
             {
                 running = true;
                 isRunThread = true;
 
-                pp.SetSize((int)((settings->GetMazeSize().x + 1) * settings->GetMazeSize().y +
-                                 (settings->GetMazeSize().y + 1) * settings->GetMazeSize().x));
+                pp.SetSize((int)((pref.GetMazeSize().x + 1) * pref.GetMazeSize().y +
+                                 (pref.GetMazeSize().y + 1) * pref.GetMazeSize().x));
                 promiseTree.set_value(Find());
                 running = false;
                 isRunThread = false;
@@ -92,11 +90,13 @@ void Uf::UnionFind::Create(std::promise<std::unordered_set<std::shared_ptr<Uf::T
     }
 }
 
-std::unordered_set<std::shared_ptr<Uf::Tree>> Uf::UnionFind::Create(int seed)
+std::unordered_set<std::shared_ptr<Uf::Tree>> Uf::UnionFind::Create(const MazePeference& pref)
 {
-    settings->SetSeeds(seed);
-    Init();
-    return Find();
+    Init(pref);
+    isRunThread = true;
+    auto res = Find();
+    isRunThread = false;
+    return res;
 }
 
 std::unordered_set<std::shared_ptr<Uf::Tree>> Uf::UnionFind::Find()
@@ -104,9 +104,9 @@ std::unordered_set<std::shared_ptr<Uf::Tree>> Uf::UnionFind::Find()
     progress = 0;
     std::unordered_set<std::shared_ptr<Uf::Tree>> tree;
 
-    std::ranges::sort(edges, [](const std::shared_ptr<Tree>& edge1, const std::shared_ptr<Tree>& edge2)
+    std::ranges::sort(trees, [](const std::shared_ptr<Tree>& edge1, const std::shared_ptr<Tree>& edge2)
                       { return edge1->weight < edge2->weight; });
-    for (const auto& edge : edges)
+    for (const auto& edge : trees)
     {
         if (Unite(edge->from, edge->to))
         {

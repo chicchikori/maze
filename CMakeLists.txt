@@ -29,24 +29,26 @@ FetchContent_MakeAvailable(SFML inter json)
 
 set(SOURCES main.cpp
 src/Game.cpp
-src/Maze/UnionFind/UnionFind.cpp
-src/Maze/UnionFind/Road.cpp
-src/Window/PopUp.cpp
-src/Window/Window.cpp
 src/Files/Settings.cpp
 src/Files/PrintMaze.cpp
-src/Maze/UnionFind/Line.cpp
+src/Files/tinyfiledialogs.c
 src/Maze/ControlMaze/Control.cpp
 src/Maze/ControlMaze/Timer.cpp
+src/Maze/UnionFind/UnionFind.cpp
+src/Maze/UnionFind/Road.cpp
+src/Maze/UnionFind/Preference.cpp
+src/Maze/UnionFind/Answer.cpp
 src/Scene/Scene.cpp
 src/Scene/GameScene.cpp
-src/Files/tinyfiledialogs.c
+src/Scene/SaveImageScene.cpp
 src/UI/Fonts.cpp
 src/UI/RoundedRectangle.cpp
 src/UI/Button.cpp
 src/UI/MenuItem.cpp
 src/UI/Dropdown.cpp
-
+src/UI/InputText.cpp
+src/Window/PopUp.cpp
+src/Window/Window.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

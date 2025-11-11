@@ -1,4 +1,4 @@
-#include "Line.h"
+#include "Answer.h"
 
 #include "../../Util/Vec2.h"
 
@@ -8,10 +8,11 @@
 #include <stack>
 #include <unordered_set>
 
-std::vector<sf::Vector2f> Line::SolveMaze(const std::unordered_set<std::shared_ptr<Uf::Tree>>& trees,
-                                          sf::Vector2i start, sf::Vector2i goal)
+std::vector<sf::Vector2f> Answer::SolveMaze(const std::unordered_set<std::shared_ptr<Uf::Tree>>& trees,
+                                            sf::Vector2i goal)
 {
     using Graph = std::unordered_map<sf::Vector2i, std::vector<sf::Vector2i>, Vec2Hash>;
+    auto start = sf::Vector2i(0, 0);
 
     Graph graph;
     for (auto& tree : trees)
@@ -62,59 +63,35 @@ std::vector<sf::Vector2f> Line::SolveMaze(const std::unordered_set<std::shared_p
         path.push_back(sf::Vector2f(cur));
         cur = parent[cur];
     }
-    // std::ranges::reverse(path);
     return path;
 }
 
-void Line::UpdateLine(const std::unordered_set<std::shared_ptr<Uf::Tree>>& trees)
+void Answer::UpdateLine(const std::unordered_set<std::shared_ptr<Uf::Tree>>& trees, const MazePeference& preferences)
 {
-    linesVArray.clear();
-    for (const auto& tree : trees)
-    {
-        AddMazeLine(sf::Vector2f(tree->from->posision), sf::Vector2f(tree->to->posision));
-    }
     answerLine.clear();
     answerRoute =
-        SolveMaze(trees, {0, 0}, sf::Vector2i((int)settings->GetMazeSize().x - 1, (int)settings->GetMazeSize().y - 1));
-    answerRoute.emplace(answerRoute.begin(), (float)settings->GetMazeSize().x - 0.5F,
-                        (float)settings->GetMazeSize().y - 1);
+        SolveMaze(trees, sf::Vector2i((int)preferences.GetMazeSize().x - 1, (int)preferences.GetMazeSize().y - 1));
+    answerRoute.emplace(answerRoute.begin(), (float)preferences.GetMazeSize().x - 0.5F,
+                        (float)preferences.GetMazeSize().y - 1);
     answerRoute.emplace_back(-0.5F, 0);
     for (int i = 0; i < answerRoute.size() - 1; i++)
     {
-        AddAnswerLine(i);
+        AddAnswerLine(i, preferences);
     }
 }
 
-void Line::AddAnswerLine(int index)
+void Answer::AddAnswerLine(int index, const MazePeference& preferences)
 {
     for (int i = 0; i < 2; i++)
     {
-        sf::Vertex vert{
-            .position = NormalToCenterWindowSize(answerRoute[index + i], settings->GetOffset(), settings->GetSize()),
-            .color = RED_COLOR};
+        sf::Vertex vert{.position = NormalToCenterWindowSize(answerRoute[index + i], preferences.GetOffset(),
+                                                             preferences.GetSize()),
+                        .color = RED_COLOR};
         answerLine.append(vert);
     }
 }
 
-void Line::AddMazeLine(sf::Vector2f vecFrom, sf::Vector2f vecTo)
+void Answer::Render() const
 {
-    sf::Vertex vertexFrom{.position = NormalToCenterWindowSize(vecFrom, settings->GetOffset(), settings->GetSize()),
-                          .color = WHITE_COLOR};
-    sf::Vertex vertexTo{.position = NormalToCenterWindowSize(vecTo, settings->GetOffset(), settings->GetSize()),
-                        .color = WHITE_COLOR};
-
-    linesVArray.append(vertexFrom);
-    linesVArray.append(vertexTo);
-}
-
-void Line::Render(bool showAnswer) const
-{
-    if (showAnswer)
-    {
-        window->GetWindow()->draw(answerLine);
-    }
-    else
-    {
-        window->GetWindow()->draw(linesVArray);
-    }
+    window->GetWindow()->draw(answerLine);
 }

@@ -12,7 +12,7 @@ class PopUp
 {
 public:
     PopUp();
-    explicit PopUp(const std::shared_ptr<Window>& window, const std::shared_ptr<Settings>& settings);
+    explicit PopUp(const std::shared_ptr<Window>& window);
     void PopProgress();
 
     void SetSize(const int num)
@@ -21,7 +21,6 @@ public:
     };
 
 private:
-    std::shared_ptr<Settings> setting;
     std::shared_ptr<Window> window;
     sf::Font& GetFont();
     sf::RectangleShape progressBar;

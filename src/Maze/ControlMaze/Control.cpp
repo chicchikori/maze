@@ -7,11 +7,16 @@
 #include <memory>
 #include <utility>
 
-Cont::Control::Control(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window,
-                       const std::unordered_set<std::shared_ptr<Uf::Tree>>& trees) : settings(setting), window(window)
+Cont::Control::Control(const std::shared_ptr<Window>& window,
+                       const std::unordered_set<std::shared_ptr<Uf::Tree>>& trees, const MazePeference& preferences) :
+    preferences(preferences), window(window)
 {
     SetTree(trees);
 }
+Cont::Control::Control(const std::shared_ptr<Window>& window) :
+    window(window) {
+
+    };
 
 void Cont::Control::SetTree(const std::unordered_set<std::shared_ptr<Uf::Tree>>& tree)
 {
@@ -32,11 +37,10 @@ void Cont::Control::Init()
     route.emplace_back(0, 0);
     controlLine.clear();
     AddLine(sf::Vector2f(0, 0), sf::Vector2f(-0.5F, 0));
-    goalPos = sf::Vector2i((int)settings->GetMazeSize().x - 1, (int)settings->GetMazeSize().y - 1);
 }
 
 
-void Cont::Control::Event(sf::Event& event)
+void Cont::Control::Event(sf::Event& event )
 {
     auto key = (event.getIf<sf::Event::KeyPressed>());
     switch (key->code)
@@ -82,7 +86,7 @@ void Cont::Control::Move(sf::Vector2i delta)
             currentPos -= delta;
         }
     }
-    isGoal = currentPos == goalPos;
+    isGoal = currentPos == preferences.GetGoalPos();
     Update();
 }
 
@@ -104,12 +108,14 @@ void Cont::Control::Update()
     }
 }
 
-void Cont::Control::AddLine(const sf::Vector2f pos1, const sf::Vector2f pos2)
+void Cont::Control::AddLine(const sf::Vector2f pos1, const sf::Vector2f pos2 )
 {
-    const sf::Vertex vectorFrom{.position = NormalToCenterWindowSize(pos1, settings->GetOffset(), settings->GetSize()),
-                                .color = GREEN_COLOR};
-    const sf::Vertex vectorTo{.position = NormalToCenterWindowSize(pos2, settings->GetOffset(), settings->GetSize()),
-                              .color = GREEN_COLOR};
+    const sf::Vertex vectorFrom{
+        .position = NormalToCenterWindowSize(pos1, preferences.GetOffset(), preferences.GetSize()),
+        .color = GREEN_COLOR};
+    const sf::Vertex vectorTo{
+        .position = NormalToCenterWindowSize(pos2, preferences.GetOffset(), preferences.GetSize()),
+        .color = GREEN_COLOR};
     controlLine.append(vectorFrom);
     controlLine.append(vectorTo);
 }
@@ -118,8 +124,3 @@ void Cont::Control::Render() const
 {
     window->GetWindow()->draw(controlLine);
 }
-
-Cont::Control::Control(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window) :
-    settings(setting), window(window) {
-
-    };

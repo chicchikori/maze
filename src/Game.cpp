@@ -8,25 +8,32 @@
 #include "Window/Window.h"
 
 #include <SFML/Graphics.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <atomic>
 #include <memory>
+#include <minwindef.h>
 
 
 SceneState Game::scene{SceneState::MazeGame};
 bool Game::isOpen{true};
+std::shared_ptr<Window> Game::window = std::make_shared<Window>(sf::Vector2u(800, 600));
 
 Game::Game()
 {
-    window = std::make_shared<Window>();
     settings = std::make_shared<Settings>(window);
-    game.InitScene(settings, window);
+    scene = SceneState::MazeGame;
+}
+
+Game::Game(const std::string& filePath)
+{
+    settings = std::make_shared<Settings>(window, filePath);
+    scene = SceneState::MazeGame;
 }
 
 void Game::Init()
 {
     game.InitScene(settings, window);
-    window->Init(settings);
-    settings->Load();
+    // settings->Load();
 }
 
 ;
@@ -65,10 +72,9 @@ void Game::Event()
                 game.Event(*event);
                 break;
             case SaveAsImage:
+                saveScene.Event(*event);
                 break;
             case Setting:
-                break;
-            case Save:
                 break;
             }
         }
@@ -86,10 +92,9 @@ void Game::Update()
         game.Update();
         break;
     case SaveAsImage:
+        saveScene.Update();
         break;
     case Setting:
-        break;
-    case Save:
         break;
     }
 }
@@ -106,10 +111,9 @@ void Game::Render()
         game.Render();
         break;
     case SaveAsImage:
+        saveScene.Render();
         break;
     case Setting:
-        break;
-    case Save:
         break;
     }
     window->GetWindow()->display();

@@ -4,6 +4,7 @@
 #include <utility>
 #include "../Util/Variables.h"
 #include "Button.h"
+#include "Fonts.h"
 
 
 DropDown::DropDown(const std::shared_ptr<Window>& window, const std::vector<std::string>& item, sf::Vector2f position) :
@@ -15,7 +16,7 @@ DropDown::DropDown(const std::shared_ptr<Window>& window, const std::vector<std:
         items.try_emplace(index,
                           std::make_pair(Button::RoundedButton(window, DROPDOWN_ROUND_RES,
                                                                {DROPDOWN_CONTENT_WIDTH, DROPDOWN_CONTENT_HEIGHT},
-                                                               DROPDOWN_ROUND, str, {.rl = Button::AlignRL::LEFT}),
+                                                               DROPDOWN_ROUND, str, {.rl = Text::AlignRL::LEFT}),
                                          false));
         items[index].first.SetPosition(
             position +

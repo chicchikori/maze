@@ -8,7 +8,7 @@
 #include <format>
 #include <string>
 
-Timer::Timer() : timerText(Fonts::font, "", MAIN_FONT_SIZE)
+Timer::Timer() : timerText(Text::Fonts::font, "", MAIN_FONT_SIZE)
 {
 }
 void Timer::Init(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window)
@@ -42,7 +42,7 @@ void Timer::Update()
 
     timerText.setString(timeStr);
     timerText.setOrigin({timerText.getLocalBounds().size.x, 0});
-    timerText.setPosition(sf::Vector2f((float)settings->GetWindowSize().x, 0));
+    timerText.setPosition(sf::Vector2f((float)window->GetDisplaySize().x, 0));
 }
 
 void Timer::RenderTimer() const
