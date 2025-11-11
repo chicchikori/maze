@@ -1,10 +1,9 @@
 #include "Scene.h"
 
-#include <memory>
 
-void Scene::Init(const std::shared_ptr<Window>& window)
+void Scene::Init()
 {
-    this->window = window;
+    // this function is virtual
 }
 
 void Scene::Update()

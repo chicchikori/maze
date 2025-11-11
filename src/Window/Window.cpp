@@ -4,6 +4,7 @@
 #include <SFML/System/Vector2.hpp>
 #include <memory>
 #include <windows.h>
+#include "../Util/Variables.h"
 
 Window::Window(const sf::Vector2u& winSize) :
     title("Maze Generator"), isFullSizeWindow(false), windowedPos(100, 100), windowedSize(800, 600)

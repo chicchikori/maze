@@ -29,8 +29,8 @@ FetchContent_MakeAvailable(SFML inter json)
 
 set(SOURCES main.cpp
 src/Game.cpp
-src/Files/Settings.cpp
 src/Files/PrintMaze.cpp
+src/Files/MazeFiles.cpp
 src/Files/tinyfiledialogs.c
 src/Maze/ControlMaze/Control.cpp
 src/Maze/ControlMaze/Timer.cpp

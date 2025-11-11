@@ -43,6 +43,16 @@ public:
         return goalPos;
     }
 
+    void SetUpdateSeed(bool update)
+    {
+        isUpdateSeed = update;
+    }
+
+    [[nodiscard]] bool GetUpdateSeed() const
+    {
+        return isUpdateSeed;
+    }
+
     void Center();
     void UpdateSeed();
 

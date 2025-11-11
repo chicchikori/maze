@@ -19,7 +19,7 @@ public:
     void Run();
     static SceneState scene;
     
-    static std::shared_ptr<Window> window;
+    static Window window;
 private:
     GameScene game;
     SaveAsScene saveScene;

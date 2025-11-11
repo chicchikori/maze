@@ -49,14 +49,14 @@ sf::Image PrintMaze::DrawMazeAnswerImage(const sf::Image& mazeImage, const std::
     return answerImage;
 }
 
-bool PrintMaze::Save(const MazePeference& pref)
+bool PrintMaze::Save(const std::shared_ptr<MazePeference>& pref)
 {
-    auto road = rc::Road(nullptr, pref);
-    road.CreateNewUf(pref);
+    auto road = rc::Road(pref);
+    road.CreateNewUf(*pref);
 
-    auto answer = Answer::SolveMaze(road.GetTree(), pref.GetGoalPos());
+    auto answer = Answer::SolveMaze(road.GetTree(), pref->GetGoalPos());
 
-    sf::Image mazeImage = DrawMazeImage(pref, road.GetBoxes());
+    sf::Image mazeImage = DrawMazeImage(*pref, road.GetBoxes());
     sf::Image answerImage = DrawMazeAnswerImage(mazeImage, answer);
 
     auto saveDirectory = std::filesystem::path(tinyfd_selectFolderDialog("select save folder", ""));

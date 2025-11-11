@@ -7,14 +7,15 @@
 #include <chrono>
 #include <format>
 #include <string>
+#include "../../Util/Variables.h"
+#include "../../Game.h"
 
 Timer::Timer() : timerText(Text::Fonts::font, "", MAIN_FONT_SIZE)
 {
 }
-void Timer::Init(const std::shared_ptr<Settings>& setting, const std::shared_ptr<Window>& window)
+void Timer::Init()
 {
-    this->window = window;
-    settings = setting;
+    
     timerText.setFillColor(WHITE_COLOR);
 }
 
@@ -42,10 +43,10 @@ void Timer::Update()
 
     timerText.setString(timeStr);
     timerText.setOrigin({timerText.getLocalBounds().size.x, 0});
-    timerText.setPosition(sf::Vector2f((float)window->GetDisplaySize().x, 0));
+    timerText.setPosition(sf::Vector2f((float)Game::window.GetDisplaySize().x, 0));
 }
 
 void Timer::RenderTimer() const
 {
-    window->GetWindow()->draw(timerText);
+    Game::window.GetWindow()->draw(timerText);
 }

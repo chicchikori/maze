@@ -8,16 +8,12 @@
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/System/Vector2.hpp>
+#include "../Game.h"
 #include <format>
-#include <memory>
 
 
-PopUp::PopUp() : progressPercentText(Text::Fonts::font, "", 16)
-{
-}
-
-PopUp::PopUp(const std::shared_ptr<Window>& window) :
-    window(window), progressPercentText(Text::Fonts::font, "", 14)
+PopUp::PopUp() :
+     progressPercentText(Text::Fonts::font, "", 14)
 {
     background.setSize(popSize);
     background.setFillColor(sf::Color(10, 10, 10));
@@ -32,7 +28,7 @@ PopUp::PopUp(const std::shared_ptr<Window>& window) :
 
 void PopUp::PopProgress()
 {
-    sf::Vector2f center = static_cast<sf::Vector2f>(window->GetWindow()->getSize()) / 2.F;
+    sf::Vector2f center = static_cast<sf::Vector2f>(Game::window.GetWindow()->getSize()) / 2.F;
     float progressValue = (static_cast<float>(Uf::UnionFind::progress) / static_cast<float>(size));
 
     progressBar.setSize(sf::Vector2f(progressValue * (popSize.x - margin * 2), progressbarWidth));
@@ -43,8 +39,8 @@ void PopUp::PopProgress()
     progressPercentText.setOrigin(progressPercentText.getLocalBounds().size / 2.F);
     progressPercentText.setPosition(center - sf::Vector2f(0, popSize.y / 2.F));
 
-    window->GetWindow()->draw(background);
-    window->GetWindow()->draw(progressBarBackground);
-    window->GetWindow()->draw(progressBar);
-    window->GetWindow()->draw(progressPercentText);
+    Game::window.GetWindow()->draw(background);
+    Game::window.GetWindow()->draw(progressBarBackground);
+    Game::window.GetWindow()->draw(progressBar);
+    Game::window.GetWindow()->draw(progressPercentText);
 }

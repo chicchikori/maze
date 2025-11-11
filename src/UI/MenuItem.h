@@ -4,23 +4,19 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 
-#include <memory>
 #include <string>
 
 #include <vector>
-#include "../Files/Settings.h"
-#include "../Window/Window.h"
 #include "Button.h"
 #include "Dropdown.h"
 
+#include "../Maze/UnionFind/Preference.h"
 namespace Menu
 {
     class MenuItem : public DropDown
     {
     public:
-        MenuItem();
-        MenuItem(const std::shared_ptr<Window>& window,
-                 const std::string& label = "", const std::vector<std::string>& item = {}, int ids = -1);
+        explicit MenuItem(const std::string& label = "", const std::vector<std::string>& item = {}, int ids = -1);
 
         void Render();
         void Update();
@@ -32,7 +28,6 @@ namespace Menu
 
     private:
         int id;
-        std::shared_ptr<Window> window;
 
         sf::Vector2f size;
 
@@ -46,15 +41,12 @@ namespace Menu
     class Menu
     {
     public:
-        Menu() = default;
-        Menu(const std::shared_ptr<Window>& window);
+        Menu();
         void Render();
-        void Update();
+        void Update(MazePeference& pref);
         void Event(sf::Event& event);
 
     private:
-        std::shared_ptr<Window> window;
-        std::shared_ptr<Settings> setting;
         MenuItem menuFile;
         sf::RectangleShape menuBarBackground;
     };
