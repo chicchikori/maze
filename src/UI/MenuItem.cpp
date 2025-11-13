@@ -3,7 +3,6 @@
 
 #include <SFML/Window/Event.hpp>
 
-#include <iostream>
 #include <string>
 
 #include "../Files/MazeFiles.h"
@@ -92,7 +91,7 @@ namespace Menu
             Files::SaveAsMaze(pref);
             break;
         case 3:
-            std::cerr << "Save as Image button but is not still configured\n";
+            Game::scene = SceneState::SaveAsImage;
             break;
         case 4:
             Game::isOpen = false;

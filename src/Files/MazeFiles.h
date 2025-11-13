@@ -19,6 +19,8 @@ private:
     static std::string GetUtf8FromPath(const std::filesystem::path& path);
     static std::filesystem::path SjisToPath(const std::string& sjis);
 
+    static void CoutPref(const MazePeference& pref);
+
 
     static std::filesystem::path mazeFilePath;
     static std::array<const char*, 1> filePattern;
