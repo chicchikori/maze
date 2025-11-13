@@ -50,13 +50,8 @@ void Files::LoadMaze(MazePeference& pref)
     }
     mazeFilePath = SjisToPath(res);
 
-    if (mazeFilePath.extension().string() != ".maze")
-    {
-        return;
-    }
 
-
-    std::ifstream files = std::ifstream(mazeFilePath);
+    std::ifstream files(mazeFilePath);
     std::string line;
     std::string resT;
 
@@ -95,6 +90,7 @@ void Files::GetFromJson(const std::string& content, MazePeference& pref)
                               {json.value("windowSize", nlohmann::basic_json<>()).value("width", 500U),
                                json.value("windowSize", nlohmann::basic_json<>()).value("height", 400U)});
     }
+    CoutPref(pref);
     std::cout << "test\n";
 }
 
@@ -129,6 +125,7 @@ bool Files::SaveAsMaze(const MazePeference& pref)
 
 void Files::SaveSettings(const MazePeference& pref)
 {
+    CoutPref(pref);
     nlohmann::json saveJson;
     saveJson["seed"] = pref.GetSeeds();
     saveJson["updateSeed"] = pref.GetUpdateSeed();
@@ -145,4 +142,12 @@ void Files::OpenWithPath(MazePeference& pref, const std::filesystem::path& path)
 {
     mazeFilePath = path;
     LoadMaze(pref);
+}
+
+void Files::CoutPref(const MazePeference& pref)
+{
+    std::cout << "Seed: " << pref.GetSeeds() << "\n";
+    std::cout << "Update Seed: " << (pref.GetUpdateSeed() ? "true" : "false") << "\n";
+    std::cout << "Maze Size: " << pref.GetMazeSize().x << ", " << pref.GetMazeSize().y << "\n";
+    std::cout << "Offset: " << pref.GetOffset().x << ", " << pref.GetOffset().y << "\n";
 }
